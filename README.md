@@ -5,7 +5,7 @@ I’ve created and configured the ASP.NET Core Web API inside the mono-repo stru
 - Web API project created
 - Solution file generated
 - Local development server tested successfully
-- Confirmed API runs on [localhost](http://localhost) ( [http://localhost:5097](http://localhost:5097/) )
+- Confirmed API runs on [localhost](http://localhost) ( [(https://localhost:5001)]https://localhost:5001 )
 
 You don’t need to recreate anything.
 
