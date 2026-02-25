@@ -31,9 +31,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name = "new"
+        name = "ai"
         options={{
-          title: 'New',
+          title: 'AI Screen',
           tabBarIcon: ({ color }) => <IconSymbol size ={28} name="paperplane.fill" color = {color} />,
         }}
       />
