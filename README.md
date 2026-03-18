@@ -1,3 +1,6 @@
+### Receipt - To - Spending - Tracker (Documentation)
+https://www.notion.so/Receipts-to-Spending-Tracker-307c1f81538280639fe4ffb163af8a11?source=copy_link 
+
 ### **Clone Repo**
 
 I’ve created and configured the ASP.NET Core Web API inside the mono-repo structure.
