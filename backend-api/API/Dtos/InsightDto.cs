@@ -21,6 +21,6 @@ public class CategorySpendingDto
     public string CategoryName { get; set; } = string.Empty;
     public Decimal Total { get; set; }
     public int Percentage { get; set; }
-    public int ReeceiptCount { get; set; }
+    public int ReceiptCount { get; set; }
 
 }
