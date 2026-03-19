@@ -429,7 +429,7 @@ npx expo start
 <br />
 <sub>Backend Developer</sub>
 <br />
-<sub>Database Architecture</sub>
+<sub>Database/ Rest API Architecture Design</sub>
 <br />
 <a href="https://github.com/UcheOnwe">
 <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" />
@@ -455,7 +455,7 @@ npx expo start
 <br />
 <sub>Backend Developer</sub>
 <br />
-<sub>Data Visualization</sub>
+<sub>OpenAI Integration</sub>
 <br />
 <a href="https://github.com/jon">
 <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" />
@@ -466,9 +466,9 @@ npx expo start
 <br />
 <b>Courtney</b>
 <br />
-<sub>Full-Stack Developer</sub>
+<sub>Frontend Developer</sub>
 <br />
-<sub>Authentication System</sub>
+<sub>Mobile UI/UX || Project Manager </sub>
 <br />
 <a href="https://github.com/courtney">
 <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" />
@@ -481,7 +481,7 @@ npx expo start
 <br />
 <sub>Frontend Developer</sub>
 <br />
-<sub>Testing & Documentation</sub>
+<sub>Data Visualization</sub>
 <br />
 <a href="https://github.com/jake">
 <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" />
