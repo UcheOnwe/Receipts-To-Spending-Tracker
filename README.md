@@ -427,7 +427,7 @@ npx expo start
 <br />
 <b>Uche Onwe</b>
 <br />
-<sub>Backend Lead</sub>
+<sub>Backend Developer</sub>
 <br />
 <sub>Database Architecture</sub>
 <br />
@@ -453,7 +453,7 @@ npx expo start
 <br />
 <b>Jon</b>
 <br />
-<sub>Frontend Developer</sub>
+<sub>Backend Developer</sub>
 <br />
 <sub>Data Visualization</sub>
 <br />
@@ -479,7 +479,7 @@ npx expo start
 <br />
 <b>Jake</b>
 <br />
-<sub>QA & DevOps</sub>
+<sub>Frontend Developer</sub>
 <br />
 <sub>Testing & Documentation</sub>
 <br />
@@ -494,11 +494,11 @@ npx expo start
 
 | Team Member | Key Contributions |
 |-------------|-------------------|
-| **Uche** | REST API design • Entity Framework setup • OpenAI integration • Database schema |
-| **Carlos** | Camera integration • Receipt scanning UI • Mobile navigation • Image handling |
-| **Jon** | Analytics dashboard • Chart visualizations • State management • React hooks |
-| **Courtney** | JWT authentication • API-mobile integration • SecureStore • User flows |
-| **Jake** | QA automation • Bug tracking • Swagger testing • README documentation |
+| **Uche** | REST API design • Entity Framework setup  • Database schema • Swagger testing • JWT authentication • README documentation • User flows |
+| **Jon** |OpenAI integration • Camera integration  • Mobile navigation |
+| **Jake** | Analytics dashboard • Chart visualizations • State management • React hooks • Receipt scanning UI|
+| **Courtney** |  • API-mobile integration • SecureStore  • Image handling |
+| **Carlos** | QA automation • Bug tracking   |
 
 </div>
 
