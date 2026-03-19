@@ -51,7 +51,7 @@ Some features and timelines shown below represent planned functionality and may 
 
 ## 🎯 Project Overview
 
-> **Senior Capstone Project** | Computer Science | 2025
+> **Senior Capstone Project** | Computer Science | 2026
 
 Receipt-to-Spending Tracker is a **full-stack mobile application** that eliminates manual expense tracking by leveraging **AI-powered receipt scanning** and providing **intelligent spending insights**. Built from the ground up using modern technologies and industry best practices.
 
