@@ -41,6 +41,13 @@
 </div>
 
 ---
+## 🚧 Project Status
+
+This project is currently under active development.
+
+Some features and timelines shown below represent planned functionality and may still be in progress. The documentation is structured to reflect the intended final system design.
+
+---
 
 ## 🎯 Project Overview
 
