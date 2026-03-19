@@ -667,6 +667,6 @@ Sprint 4 → Analytics Dashboard & Insights
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=100&section=footer" />
 
-**Built with ❤️ by Team Receipt Trackers | 2025**
+**Built with ❤️ by Team Receipt Trackers | 2026**
 
 </div>
