@@ -1,0 +1,8 @@
+3/24/26
+Changed the port that front end communicates to to  0.0.0.0:5000
+Added this text fileto document changes
+Added third page for just AI
+put button to connect to AiService.cs
+Port currently using is 5000
+Still must run dotnet run for server and npm start for App
+

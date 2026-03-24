@@ -13,7 +13,18 @@ import { Fonts } from '@/constants/theme';
 import { Button, View, Alert } from 'react-native';
 
 export default function TabTwoScreen() {
-  return (
+   // call test function here 
+  const callTest = async () => {
+    try {
+      const response = await fetch("http://192.168.1.83:5000/api/ai/test");
+      const text = await response.text();
+      Alert.alert("Backend Response", text);
+    } catch (error) {
+      Alert.alert("Error", "Could not reach backend");
+      console.error(error);
+    }
+  };
+    return (
     //copied from the explore page
     <ParallaxScrollView
           headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
@@ -37,8 +48,8 @@ export default function TabTwoScreen() {
        {/* //putting a button */}
     <View style={styles.container}> 
         <Button
-        title="Click Me"
-        onPress={() => Alert.alert('Button Pressed!')}
+        title="Call backend"
+        onPress={callTest}
         color="#841584"
         />
     </View>
