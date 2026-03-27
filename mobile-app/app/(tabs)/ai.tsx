@@ -12,11 +12,24 @@ import { Fonts } from '@/constants/theme';
 //import React from 'react';
 import { Button, View, Alert } from 'react-native';
 
+//url api
+import Constants from "expo-constants";
+
+//test
+const config = Constants.expoConfig ?? Constants.manifest;
+
+//? for if when Expo loads config differently
+const API_URL =  Constants.expoConfig?.extra?.apiUrl ??
+  Constants.manifest?.extra?.apiUrl;
+//console.log("API URL:", API_URL);
+console.log("Config extra:", config?.extra);
+console.log("API URL from config:", config?.extra?.apiUrl);
+
 export default function TabTwoScreen() {
    // call test function here 
   const callTest = async () => {
     try {
-      const response = await fetch("http://192.168.1.83:5000/api/ai/test");
+      const response = await fetch(`${API_URL}/api/ai/test`);
       const text = await response.text();
       Alert.alert("Backend Response", text);
     } catch (error) {

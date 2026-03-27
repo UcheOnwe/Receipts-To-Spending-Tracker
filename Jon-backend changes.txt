@@ -6,3 +6,10 @@ put button to connect to AiService.cs
 Port currently using is 5000
 Still must run dotnet run for server and npm start for App
 
+3/26/26
+added API_URL to .env
+put extra section in app.json
+renamed app.json in mobile-app to app.config.json
+added .env to mobile-app
+fixed fetch address to use API_URL
+
