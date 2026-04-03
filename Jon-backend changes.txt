@@ -13,3 +13,12 @@ renamed app.json in mobile-app to app.config.json
 added .env to mobile-app
 fixed fetch address to use API_URL
 
+4/02/26
+insatlled library 
+    npx expo install expo-camera
+    in mobile-app
+    needed to audit fixe
+added expo-camera to app.config.json
+added camera button and permissions to ai,tsx
+
+

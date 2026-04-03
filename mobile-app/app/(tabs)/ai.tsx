@@ -9,8 +9,14 @@ import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 //to put a button in react antive
-//import React from 'react';
-import { Button, View, Alert } from 'react-native';
+import { Button, View, Alert, Text, Pressable } from 'react-native';
+
+//import for camera
+import {CameraType, CameraView, useCameraPermissions, CameraMode } from 'expo-camera';
+import {useState, useRef } from 'react';
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Feather from "@expo/vector-icons/Feather";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 //url api
 import Constants from "expo-constants";
@@ -37,9 +43,140 @@ export default function TabTwoScreen() {
       console.error(error);
     }
   };
+
+  //get camera permissions
+  const [showCamera, setShowCamera] = useState(false);
+  const [permission, requestPermission] = useCameraPermissions();
+  const [facing, setFacing] = useState<CameraType>('back');
+  //{console.log (permission?.granted)};
+  const ref = useRef<CameraView>(null);
+  const [mode, setMode] = useState<CameraMode>("picture");
+  const [uri, setUri] = useState<string | null>(null);
+  const [recording, setRecording] = useState(false);
+
+
+
+  function CameraViewComponent(){ 
+
+      if(!permission) return null; //camera permission still loading
+      if (!permission.granted){ // camera permission not granted
+        return(
+          <View style ={styles.container}>
+            <Text>Permission needed to use the camera</Text>
+            <Button title="Grant Permission" onPress={() =>{console.log("push granted");
+                          requestPermission()
+                          console.log(permission.granted);
+                          }} />
+          </View>
+        );
+      }
     return (
+      <View style={{flex:1, backgroundColor:"black"}}>
+        <View style ={{paddingTop: 50, paddingHorizontal:20}}>
+          <Button title="Close Camera" onPress ={() => setShowCamera(false)} />
+        </View>
+      <View style={{flex:1}}>
+        {uri ? renderPicture(uri) : renderCamera()}
+      </View>
+      </View>
+    );
+    
+  
+  }
+ const takePicture = async () => {
+    const photo = await ref.current?.takePictureAsync();
+    if (photo?.uri) setUri(photo.uri);
+  };
+
+  const recordVideo = async () => {
+    if (recording) {
+      setRecording(false);
+      ref.current?.stopRecording();
+      return;
+    }
+    setRecording(true);
+    const video = await ref.current?.recordAsync();
+    console.log({ video });
+  };
+
+  const toggleMode = () => {
+    setMode((prev) => (prev === "picture" ? "video" : "picture"));
+  };
+
+  const toggleFacing = () => {
+    setFacing((prev) => (prev === "back" ? "front" : "back"));
+  };
+
+   const renderPicture = (uri: string) => {
+    return (
+      <View style={{flex: 1}}>
+        <Image
+          source={{ uri }}
+          contentFit="contain"
+          style={{ flex: 1 }}
+        />
+        <Button onPress={() => setUri(null)} title="Take another picture" />
+      </View>
+    );
+  };
+
+   const renderCamera = () => {
+    return (
+        <View style={styles.cameraContainer}>
+          <CameraView
+            style={styles.camera}
+            ref={ref}
+            mode={mode}
+            facing={facing}
+            mute={false}
+            responsiveOrientationWhenOrientationLocked
+          />
+          <View style={styles.shutterContainer}>
+            <Pressable onPress={toggleMode}>
+              {mode === "picture" ? (
+                <AntDesign name="picture" size={32} color="white" />
+              ) : (
+                <Feather name="video" size={32} color="white" />
+              )}
+            </Pressable>
+            <Pressable onPress={mode === "picture" ? takePicture : recordVideo}>
+              {({ pressed }) => (
+                <View
+                  style={[
+                    styles.shutterBtn,
+                    {
+                      opacity: pressed ? 0.5 : 1,
+                    },
+                  ]}
+                >
+                  <View
+                    style={[
+                      styles.shutterBtnInner,
+                      {
+                        backgroundColor: mode === "picture" ? "white" : "red",
+                      },
+                    ]}
+                  />
+                </View>
+              )}
+            </Pressable>
+            <Pressable onPress={toggleFacing}>
+              <FontAwesome6 name="rotate-left" size={32} color="white" />
+            </Pressable>
+          </View>
+        </View>
+    );
+  };
+
+//To show only camera
+if (showCamera) {
+  return <CameraViewComponent />;
+}
+  //main 
+  return (
+    
     //copied from the explore page
-    <ParallaxScrollView
+    <ParallaxScrollView 
           headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
           headerImage={
             <IconSymbol
@@ -65,8 +202,17 @@ export default function TabTwoScreen() {
         onPress={callTest}
         color="#841584"
         />
+        <Button
+        title ="activate camera"
+        onPress={() => {console.log("Pressed!");
+          console.log(permission?.granted);
+                      setShowCamera(true);
+        }}/>
+        
     </View>
+      {showCamera && <CameraViewComponent/>}
     </ParallaxScrollView>
+    
   );
 }
 
@@ -86,5 +232,34 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     gap: 8,
+  },
+  //Camera stuff
+  cameraContainer: StyleSheet.absoluteFillObject,
+  camera: StyleSheet.absoluteFillObject,
+  shutterContainer: {
+    position: "absolute",
+    bottom: 44,
+    left: 0,
+    width: "100%",
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 30,
+    backgroundColor: "black",
+  },
+  shutterBtn: {
+    backgroundColor: "transparent",
+    borderWidth: 5,
+    borderColor: "white",
+    width: 85,
+    height: 85,
+    borderRadius: 45,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  shutterBtnInner: {
+    width: 70,
+    height: 70,
+    borderRadius: 50,
   },
 });
