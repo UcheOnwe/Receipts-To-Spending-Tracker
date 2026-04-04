@@ -32,7 +32,7 @@ console.log("Config extra:", config?.extra);
 console.log("API URL from config:", config?.extra?.apiUrl);
 
 export default function TabTwoScreen() {
-   // call test function here 
+   // call backend test function here 
   const callTest = async () => {
     try {
       const response = await fetch(`${API_URL}/api/ai/test`);
@@ -44,6 +44,39 @@ export default function TabTwoScreen() {
     }
   };
 
+  //call AI test function here
+  const callAi = async () =>{
+    try{
+      const response = await fetch(`${API_URL}/api/ai/openai-test`);
+      const json = await response.json();
+      Alert.alert("Open Ai says: ", json.response);
+    }catch(error){
+      Alert.alert("Error", "could not reach OpenAI");
+      console.error(error);
+    }
+  }
+
+  //call AI with prompt
+  const callAiPrompt = async (prompt : string) =>{
+    try{
+      const response = await fetch(`${API_URL}/api/ai/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ prompt })
+      });
+
+      const data = await response.json();
+      Alert.alert("Open Ai says: ", data.response);
+    }catch(error){
+      Alert.alert("Error", "could not reach OpenAI");
+      console.error(error);
+    }
+
+  }
+  //Ai response
+   const [aiResponse, setAiResponse] = useState("");
   //get camera permissions
   const [showCamera, setShowCamera] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
@@ -83,9 +116,44 @@ export default function TabTwoScreen() {
     
   
   }
+
+  //to send photo uri to backend
+const uploadToBackend = async (uri: any) => {
+  const formData = new FormData();
+
+  formData.append(
+    "file", 
+    {
+    uri,
+    type: "image/jpeg",
+    name: "photo.jpg",
+  } as any
+);
+
+  const response = await fetch(`${API_URL}/api/ai/image`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    body: formData,
+  });
+
+  //const json = await response.json();   for test
+  const text = await response.text(); //to test
+  console.log("RAW RESPONSE:", text); //to test
+  //console.log("AI Response:", json.response);
+  return text;
+  //return json.response;
+};
+
  const takePicture = async () => {
     const photo = await ref.current?.takePictureAsync();
-    if (photo?.uri) setUri(photo.uri);
+    if (photo?.uri) {
+      setUri(photo.uri);
+      //send to backend to send to AI
+      const aiResult = await uploadToBackend(photo.uri);
+      setAiResponse(aiResult);
+    }
   };
 
   const recordVideo = async () => {
@@ -107,7 +175,7 @@ export default function TabTwoScreen() {
     setFacing((prev) => (prev === "back" ? "front" : "back"));
   };
 
-   const renderPicture = (uri: string) => {
+   const renderPicture = (uri: any) => {
     return (
       <View style={{flex: 1}}>
         <Image
@@ -172,6 +240,9 @@ export default function TabTwoScreen() {
 if (showCamera) {
   return <CameraViewComponent />;
 }
+
+
+
   //main 
   return (
     
@@ -208,8 +279,22 @@ if (showCamera) {
           console.log(permission?.granted);
                       setShowCamera(true);
         }}/>
-        
+         <Button
+        title="Call AI"
+        onPress={callAi}
+        color="#841584"
+        />
+        <Button
+        title="Call AI prompt"
+        onPress={() =>callAiPrompt("Write me a haiku")}
+        color="#841584"
+        />
     </View>
+    {aiResponse && (
+  <Text style={{ marginTop: 20, fontSize: 16 }}>
+    AI says: {aiResponse}
+  </Text>
+)}
       {showCamera && <CameraViewComponent/>}
     </ParallaxScrollView>
     

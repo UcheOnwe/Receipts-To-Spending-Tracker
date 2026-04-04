@@ -1,5 +1,10 @@
 using API.Data;
 using Microsoft.EntityFrameworkCore;
+using DotNetEnv;
+using API.Services;
+
+//load envireonment variables
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +18,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped<AiService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
@@ -25,6 +32,7 @@ if (app.Environment.IsDevelopment())
 // Configure the HTTP request pipeline. (middleware)
 app.UseRouting();
 //app.UseHttpsRedirection();    //commented out for local testing
+app.UseStaticFiles();           //to properly send URL to OpenAI
 app.UseAuthorization();
 
 

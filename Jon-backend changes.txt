@@ -21,4 +21,12 @@ insatlled library
 added expo-camera to app.config.json
 added camera button and permissions to ai,tsx
 
-
+4/3/26
+Added openAi test function to AiServices.cs
+connected camera to OpenAI
+ran into issues becaue OpenAI could not reach locally hosted images 
+    but could service text request
+    need to  install ngrok to make reachable to OpenAI
+Installed ngrok on computer
+    made an account connected to github
+    connects local server to wider internet for OpenAI
