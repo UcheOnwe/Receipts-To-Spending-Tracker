@@ -6,7 +6,7 @@
  */
 
 //STEP1: Configuration for Network/Server to work on mobile not just localhost(Computer)
-const BASE_URL = 'https://172.20.10.3:5001/api';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 //STEP2: API Functions - One for each backend endpoint
 
