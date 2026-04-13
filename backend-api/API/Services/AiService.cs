@@ -53,7 +53,8 @@ public class AiService
         var message = ChatMessage.CreateUserMessage(
             new ChatMessageContentPart[]
             {
-                ChatMessageContentPart.CreateTextPart("text"),
+                ChatMessageContentPart.CreateTextPart(
+                    "Please give me the following information: Name of the store, total money spent, numbered list of products purchased each on a new line"),
                 ChatMessageContentPart.CreateImagePart(new Uri(imageUrl))    
             }
         );

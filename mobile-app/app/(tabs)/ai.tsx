@@ -28,8 +28,8 @@ const config = Constants.expoConfig ?? Constants.manifest;
 const API_URL =  Constants.expoConfig?.extra?.apiUrl ??
   Constants.manifest?.extra?.apiUrl;
 //console.log("API URL:", API_URL);
-console.log("Config extra:", config?.extra);
-console.log("API URL from config:", config?.extra?.apiUrl);
+//console.log("Config extra:", config?.extra);
+//console.log("API URL from config:", config?.extra?.apiUrl);
 
 export default function TabTwoScreen() {
    // call backend test function here 
@@ -100,6 +100,14 @@ export default function TabTwoScreen() {
                           requestPermission()
                           console.log(permission.granted);
                           }} />
+            {/*For if we do not grant permission */}
+            <View style={{ marginTop: 10 }}>
+              <Button 
+                title="Cancel" 
+                color="red"
+                onPress={() => setShowCamera(false)} 
+              />
+            </View>
           </View>
         );
       }
@@ -113,8 +121,6 @@ export default function TabTwoScreen() {
       </View>
       </View>
     );
-    
-  
   }
 
   //to send photo uri to backend
@@ -138,12 +144,12 @@ const uploadToBackend = async (uri: any) => {
     body: formData,
   });
 
-  //const json = await response.json();   for test
-  const text = await response.text(); //to test
-  console.log("RAW RESPONSE:", text); //to test
-  //console.log("AI Response:", json.response);
-  return text;
-  //return json.response;
+  const json = await response.json();   
+  //const text = await response.text(); //to test
+  //console.log("RAW RESPONSE:", text); //to test
+  console.log("AI Response:", json.response);
+  //return text;  to test
+  return json.response;
 };
 
  const takePicture = async () => {
