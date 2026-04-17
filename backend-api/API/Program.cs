@@ -2,7 +2,6 @@ using API.Data;
 using API.Services;
 using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
-using API.Services;
 
 //load envireonment variables
 Env.Load();

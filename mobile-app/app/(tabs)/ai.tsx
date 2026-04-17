@@ -27,9 +27,9 @@ const config = Constants.expoConfig ?? Constants.manifest;
 //? for if when Expo loads config differently
 const API_URL =  Constants.expoConfig?.extra?.apiUrl ??
   Constants.manifest?.extra?.apiUrl;
-//console.log("API URL:", API_URL);
-//console.log("Config extra:", config?.extra);
-//console.log("API URL from config:", config?.extra?.apiUrl);
+console.log("API URL:", API_URL);
+console.log("Config extra:", config?.extra);
+console.log("API URL from config:", config?.extra?.apiUrl);
 
 export default function TabTwoScreen() {
    // call backend test function here 

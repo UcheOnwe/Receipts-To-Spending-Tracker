@@ -79,7 +79,7 @@ public class AiController : ControllerBase
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded");
 
-        // STEP 1 — Save file to wwwroot/uploads
+        // Save file to wwwroot/uploads
         var uploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
         Directory.CreateDirectory(uploads);
 
@@ -91,13 +91,13 @@ public class AiController : ControllerBase
             await file.CopyToAsync(stream);
         }
 
-        // STEP 2 — Build a public URL for OpenAI
+        // Build a public URL for OpenAI
         var imageUrl = $" https://unquellable-undeviously-idell.ngrok-free.dev/uploads/{fileName}";
         //^^^ since using free version of ngrok need to update each time^^^
         /*
-            whenever start new session in command prompt: ngrok http *portnumber* for me 5000
+            whenever start new session in command prompt: ngrok http *portnumber* for me 5001
         */
-        // STEP 3 — Call AiService
+        // Call AiService
         var result = await _ai.ProcessImageUrlAsync(imageUrl);
 
         return Ok(new { response = result });

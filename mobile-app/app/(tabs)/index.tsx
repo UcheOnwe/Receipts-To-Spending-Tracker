@@ -32,7 +32,9 @@ export default function ReceiptListScreen()
   //[] - run only once
 
 
-
+//test to see network address
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+console.log('public expo',BASE_URL);
 
  //API calls are asyncronous. They take time. use with await
   async function loadReceipts(){
