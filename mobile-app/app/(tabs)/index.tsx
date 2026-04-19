@@ -54,7 +54,7 @@ console.log('public expo',BASE_URL);
       // if error, store error message
       if( err instanceof Error){ /*Trust that err.message is a real error object because Typescript 
         doesnt know what type err is in the catch block*/
-        setError('failed to lead receipts' + err.message);
+        setError('failed to load receipts' + err.message);
       }
       else {
         setError('failed to load receipts')

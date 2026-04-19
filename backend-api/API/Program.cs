@@ -2,7 +2,7 @@ using API.Data;
 using API.Services;
 using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
-
+        
 //load envireonment variables
 Env.Load();
 
@@ -34,7 +34,7 @@ if (app.Environment.IsDevelopment())
 
 // Configure the HTTP request pipeline. (middleware)
 app.UseRouting();
-//app.UseHttpsRedirection();    //commented out for local testing
+app.UseHttpsRedirection();    //commented out for local testing
 app.UseStaticFiles();           //to properly send URL to OpenAI
 app.UseAuthorization();
 
@@ -43,4 +43,6 @@ app.MapControllers();
 
 //added to allow external devices
 app.Urls.Add("http://0.0.0.0:5000");
+app.Urls.Add("http://0.0.0.0:5001");
+
 app.Run();
