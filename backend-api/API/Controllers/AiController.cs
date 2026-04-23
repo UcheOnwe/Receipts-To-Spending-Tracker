@@ -95,7 +95,7 @@ public class AiController : ControllerBase
         var imageUrl = $" https://unquellable-undeviously-idell.ngrok-free.dev/uploads/{fileName}";
         //^^^ since using free version of ngrok may need to update each time^^^
         /*
-            whenever start new session in command prompt: ngrok http *portnumber* for me 5001
+            whenever start new session in command prompt: ngrok http *portnumber* for me 5000
         */
         // Call AiService
         var result = await _ai.ProcessImageUrlAsync(imageUrl);
