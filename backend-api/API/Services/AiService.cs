@@ -1,7 +1,5 @@
 using OpenAI;
 using OpenAI.Responses;
-//using System;
-//using System.Threading.Tasks;
 using OpenAI.Files; //for input files
 using OpenAI.Chat;
 using System.Text;

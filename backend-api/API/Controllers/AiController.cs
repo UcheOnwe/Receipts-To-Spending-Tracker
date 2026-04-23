@@ -99,6 +99,15 @@ public class AiController : ControllerBase
         */
         // Call AiService
         var result = await _ai.ProcessImageUrlAsync(imageUrl);
+        /*make three functions each for part of the receipt
+        var storeNAme = await _ai.NameProcessImageUrlAsync(imageUrl);
+        var total =  await _ai.TotalProcessImageUrlAsync(imageUrl);
+        var List<string> products = await _ai.ProductProcessImageUrlAsync(image);
+
+        Do not need to create object need to impout data into reciept objects
+        need to look up how to import other functions from other C# files
+        
+        */
 
         return Ok(new { response = result });
     }

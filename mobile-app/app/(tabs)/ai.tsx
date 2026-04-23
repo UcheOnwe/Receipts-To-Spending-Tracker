@@ -130,11 +130,11 @@ const uploadToBackend = async (uri: any) => {
   formData.append(
     "file", 
     {
-    uri,
-    type: "image/jpeg",
-    name: "photo.jpg",
-  } as any
-);
+      uri,
+      type: "image/jpeg",
+      name: "photo.jpg",
+    } as any
+  );
 
   const response = await fetch(`${API_URL}/api/ai/image`, {
     method: "POST",
