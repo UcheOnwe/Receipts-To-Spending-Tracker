@@ -93,7 +93,7 @@ public class AiController : ControllerBase
 
         // Build a public URL for OpenAI
         var imageUrl = $" https://unquellable-undeviously-idell.ngrok-free.dev/uploads/{fileName}";
-        //^^^ since using free version of ngrok need to update each time^^^
+        //^^^ since using free version of ngrok may need to update each time^^^
         /*
             whenever start new session in command prompt: ngrok http *portnumber* for me 5001
         */
