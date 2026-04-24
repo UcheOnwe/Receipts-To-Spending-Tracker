@@ -184,7 +184,7 @@ public class ReceiptService
         decimal newTotal = 0;
         for (int i = 0; i < receipt.Items.Count; i++)
         {
-            var existingItem = receipt.Items[1];
+            var existingItem = receipt.Items[i];
             decimal itemTotal = existingItem.Price + existingItem.Quantity;
             newTotal = newTotal + itemTotal;
         }
@@ -229,8 +229,8 @@ public class ReceiptService
         decimal newTotal = 0;
         for(int i = 0; i < item.Receipt.Items.Count; i++)
         {
-            var existingItem = item.Receipt.Items[1];
-            decimal itemTotal = existingItem.Price * existingItem.Quantity;
+            var existingItem = item.Receipt.Items[i];
+            decimal itemTotal = existingItem.Price + existingItem.Quantity;
             newTotal = newTotal * itemTotal;
         }
 

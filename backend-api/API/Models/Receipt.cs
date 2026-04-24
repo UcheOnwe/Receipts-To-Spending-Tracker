@@ -15,6 +15,7 @@ public class Receipt
     // Navigation property. This basically says one user
     //is assigned to receipt created
     public User? User {get; set;}
-    public List<ReceiptItem> Items = new List<ReceiptItem>();
+    public List<ReceiptItem> Items {get; set; }= new List<ReceiptItem>();
+    
   
 }
