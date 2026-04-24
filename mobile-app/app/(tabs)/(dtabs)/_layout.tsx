@@ -14,27 +14,28 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
+        tabBarStyle: { height: 70 },
         tabBarButton: HapticTab,
       }}>
       <Tabs.Screen
-        name="scan"
+        name="bar"
         options={{
-          title: 'Scan',
-          tabBarIcon: ({ color }) => <Feather name="camera" size={24} color={color} />,
+          title: 'Bar Graph',
+          tabBarIcon: ({ color }) => <Feather name="bar-chart-2" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="tracker"
+        name="pie"
         options={{
-          title: 'Tracker',
-          tabBarIcon: ({ color }) => <Feather name='list' size={24} color={color} />,
+          title: 'weekly spending',
+          tabBarIcon: ({ color }) => <Feather name='pie-chart' size={24} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="(dtabs)"
+        name="description"
         options={{
-          title: 'Data',
-          tabBarIcon: ({ color }) => <Feather name='file-text' size={24} color={color} />,
+          title: 'Description',
+          tabBarIcon: ({ color }) => <Feather name='align-center' size={24} color={color} />,
         }}
       />
     </Tabs>

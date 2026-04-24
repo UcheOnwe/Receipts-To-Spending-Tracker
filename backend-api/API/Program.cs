@@ -1,6 +1,9 @@
 using API.Data;
 using API.Services;
 using Microsoft.EntityFrameworkCore;
+using DotNetEnv;
+
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,5 +32,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+app.Urls.Add("http://0.0.0.0:5001");
 
 app.Run();
