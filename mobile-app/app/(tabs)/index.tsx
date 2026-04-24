@@ -2,6 +2,11 @@
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
 import api from '../../Services/api'; //Our API Services  
+import { useRouter } from 'expo-router';
+
+//Runs code every time this screen becomes active (Used to refresh data when coming back)
+import { useFocusEffect } from 'expo-router';
+import { useCallback } from 'react'; // Prevents unnecessary re-runs (required for useFocusEffect to work properly)
 
 //Every screen = a function 
 export default function ReceiptListScreen()
@@ -21,14 +26,25 @@ export default function ReceiptListScreen()
   // error - stores error message if something fails
   const[error, setError] = useState<string | null>(null); //Union Type: string or null
 
+ //Tool provided by Expo to move between screens (like changing pages)
+  const router = useRouter();
+
+   
+
+  useFocusEffect(
+    useCallback(() => {
+      // loadReceipts runs everytime screen is opened or returned to
+      loadReceipts();
+    }, [])
+  );
 
 
 
 
   //for loading
-  useEffect(()=>{
+  /*useEffect(()=>{
     loadReceipts();
-  },[]) //Empty array = run once screen loads 
+  },[]) //Empty array = run once screen loads */
   //[] - run only once
 
 
@@ -122,6 +138,16 @@ export default function ReceiptListScreen()
           }
         />
       )}
+
+
+      {/* Button - Navigate to Create Receipt Screen*/}
+      <Text
+        style = {{ color: 'pink', marginTop: 15, textAlign: 'center'}}
+        onPress={() => router.push('/create-receipt')}
+      >
+        + Add Receipt
+      </Text>
+      
     </View>
   );
 }
