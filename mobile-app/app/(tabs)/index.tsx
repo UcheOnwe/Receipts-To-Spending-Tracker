@@ -48,7 +48,9 @@ export default function ReceiptListScreen()
   //[] - run only once
 
 
-
+//test to see network address
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+console.log('public expo',BASE_URL);
 
  //API calls are asyncronous. They take time. use with await
   async function loadReceipts(){
@@ -68,7 +70,7 @@ export default function ReceiptListScreen()
       // if error, store error message
       if( err instanceof Error){ /*Trust that err.message is a real error object because Typescript 
         doesnt know what type err is in the catch block*/
-        setError('failed to lead receipts' + err.message);
+        setError('failed to load receipts' + err.message);
       }
       else {
         setError('failed to load receipts')

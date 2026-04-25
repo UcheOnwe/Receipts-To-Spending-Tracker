@@ -1,0 +1,32 @@
+3/24/26
+Changed the port that front end communicates to to  0.0.0.0:5000
+Added this text fileto document changes
+Added third page for just AI
+put button to connect to AiService.cs
+Port currently using is 5000
+Still must run dotnet run for server and npm start for App
+
+3/26/26
+added API_URL to .env
+put extra section in app.json
+renamed app.json in mobile-app to app.config.json
+added .env to mobile-app
+fixed fetch address to use API_URL
+
+4/02/26
+insatlled library 
+    npx expo install expo-camera
+    in mobile-app
+    needed to audit fixe
+added expo-camera to app.config.json
+added camera button and permissions to ai,tsx
+
+4/3/26
+Added openAi test function to AiServices.cs
+connected camera to OpenAI
+ran into issues becaue OpenAI could not reach locally hosted images 
+    but could service text request
+    need to  install ngrok to make reachable to OpenAI
+Installed ngrok on computer
+    made an account connected to github
+    connects local server to wider internet for OpenAI
