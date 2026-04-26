@@ -57,7 +57,7 @@ async function createReceipt(receiptData)
     try
     {
         // Step 1: Make HTTP POST request to backend
-        const response = await fetch(BASE_URL + 'receipt', {
+        const response = await fetch(BASE_URL + '/receipt', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json' //Tell Backend: I'm sending a JSON data
