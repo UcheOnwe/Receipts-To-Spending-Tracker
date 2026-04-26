@@ -8,7 +8,8 @@
     "start:tunnel": "expo start -c --tunnel",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "postinstall": "node aotuAddConfigPlugins.js"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
