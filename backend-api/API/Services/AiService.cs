@@ -3,6 +3,7 @@ using OpenAI.Responses;
 using OpenAI.Files; //for input files
 using OpenAI.Chat;
 using System.Text;
+using System;
 
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Sprache;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.HttpResults;
 using OpenAI.Audio;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using API.Dtos;
 
 namespace API.Services;
 
@@ -60,5 +62,143 @@ public class AiService
         var result = await _chat.CompleteChatAsync(new[] { message });
 
         return result.Value.Content[0].Text;
+    }
+
+    public async Task<string> NameProcessImageUrlAsync(string imageUrl)
+    {
+        var message = ChatMessage.CreateUserMessage(
+            new ChatMessageContentPart[]
+            {
+                ChatMessageContentPart.CreateTextPart(
+                    "Please give me the following information: Name of the store"),
+                ChatMessageContentPart.CreateImagePart(new Uri(imageUrl))    
+            }
+        );
+
+        var result = await _chat.CompleteChatAsync(new[] { message });
+
+        return result.Value.Content[0].Text;
+    }
+
+    //get list of products with quantity and prices
+    public async Task<string> ProductProcessImageUrlAsync(string imageUrl)
+    {
+        var prompt = @"
+                    You are extracting structured data from a receipt.
+
+                    Output format:
+                    name-quantity-price-
+
+                    Example:
+                    Input:
+                    Milk 2 $3.50
+                    Bread $2.00
+
+                    Output:
+                    Milk-2-3.50-
+                    Bread-1-2.00-";
+        var message = ChatMessage.CreateUserMessage(
+            new ChatMessageContentPart[]
+            {
+                ChatMessageContentPart.CreateTextPart(prompt),
+                ChatMessageContentPart.CreateImagePart(new Uri(imageUrl))    
+            }
+        );
+
+        var result = await _chat.CompleteChatAsync(new[] { message });
+
+        
+        return result.Value.Content[0].Text;
+    }
+
+    //go through list of items returned by the AI and make a new item object to populate reciept
+    public static List<CreateReceiptItemDto> MakeList(string products)
+    {
+        int count =0; //counter to decide if product quantity or price
+		int start = 0;
+        string name = "";
+        Decimal price = 0.0M;
+        int quantity = 1;                                               //convert to decimal
+        List<CreateReceiptItemDto> things = new List<CreateReceiptItemDto>(); 
+		for(int x=0;x<products.Length;x++)
+		{	
+            int option = count%3;
+           
+			if(products[x] == '-')
+			{				
+                
+
+				switch(option)
+				{
+                    case(0): //product 
+                        string prod ="";
+                        for(int i = start; i< x;i++)
+                            {
+                                prod = prod + products[i];
+                            }
+                        name = prod;
+                        count++;
+                        start = x+1;
+                        break;
+
+				case(1): //quantity
+					string q =""; //need to get string before casting it to decimal 
+					int quant =0;		//need to change quantity to decimal in case of weight quantity
+					for(int i = start; i<x;i++)
+						{
+							q = q+products[i];
+						}
+                    string tempQ="";
+                    for(int i = 0; i<q.Length;i++)
+                        {
+                            if(char.IsNumber(q[i]))
+                            {
+                                tempQ +=q[i];
+                            }
+                        }    
+					quant = Convert.ToInt32(tempQ);		//cast string to decimal
+                    quantity = quant;
+					count++;
+					start = x+1;
+					break;
+
+				case(2): //price 
+					string p ="";		//string to get price
+					decimal pr =0.0M;
+					for(int i = start; i<x;i++)
+						{
+							p = p + products[i];
+						}
+                    string tempP="";
+                    for(int i = 0; i<p.Length;i++)
+                        {
+                            if(!char.IsLetter(p[i]))               
+                            {
+                                if(p[i] == '.')
+                                tempP +=p[i];
+                            }
+                        
+                        }   
+					pr = Convert.ToDecimal(p);
+					count++;
+					start = x+1;
+                    //populate 1 item
+                    CreateReceiptItemDto item = new CreateReceiptItemDto();
+                    item.ItemName = name;
+                    item.Quantity = quantity;
+                    item.Price = price;
+                    things.Add(item);
+
+                    //reset values
+                    name = "";
+                    price = 0.0M;
+                    quantity = 1;
+
+					break;
+                }
+					
+			}
+		}
+        return things;		
     }
 } 

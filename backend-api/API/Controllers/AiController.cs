@@ -2,6 +2,7 @@ namespace API.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
 using API.Services;
+using API.Dtos;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -97,8 +98,25 @@ public class AiController : ControllerBase
         /*
             whenever start new session in command prompt: ngrok http *portnumber* for me 5000
         */
+
+        //create receipt object
+        CreateReceiptDto Rec = new CreateReceiptDto();
+        //put in store data
+        Rec.Store = await _ai.NameProcessImageUrlAsync(imageUrl);
+
+        //create product list
+        //get list of items with quantity and price from AI
+        var listOfItems = await _ai.ProductProcessImageUrlAsync(imageUrl);
+        Console.Write("****" + listOfItems); //writes in backend command prompt
+        Rec.Items = AiService.MakeList(listOfItems);
+        //go through list of items and make a new item for the receipt
+
         // Call AiService
         var result = await _ai.ProcessImageUrlAsync(imageUrl);
+
+        //this will take the response and populate the item list for the receipt
+
+
         /*make three functions each for part of the receipt
         var storeNAme = await _ai.NameProcessImageUrlAsync(imageUrl);
         var total =  await _ai.TotalProcessImageUrlAsync(imageUrl);
@@ -110,5 +128,63 @@ public class AiController : ControllerBase
         */
 
         return Ok(new { response = result });
+    }
+
+    [HttpPost("imageName")]
+    public async Task<IActionResult> ProcessImageName(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest("No file uploaded");
+
+        // Save file to wwwroot/uploads
+        var uploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        Directory.CreateDirectory(uploads);
+
+        var fileName = Guid.NewGuid() + ".jpg";
+        var filePath = Path.Combine(uploads, fileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        // Build a public URL for OpenAI
+        var imageUrl = $" https://unquellable-undeviously-idell.ngrok-free.dev/uploads/{fileName}";
+        //^^^ since using free version of ngrok may need to update each time^^^
+        /*
+            whenever start new session in command prompt: ngrok http *portnumber* for me 5000
+        */
+
+        //create receipt object
+        CreateReceiptDto Rec = new CreateReceiptDto();
+        //put in store data
+        Rec.Store = await _ai.NameProcessImageUrlAsync(imageUrl);
+        var result = await _ai.NameProcessImageUrlAsync(imageUrl);
+        Console.Write("name has been processed");
+        return Ok(new { response = result });
+        // //create product list
+        // //get list of items with quantity and price from AI
+        // var listOfItems = await _ai.ProductProcessImageUrlAsync(imageUrl);
+        // Console.Write(listOfItems); //writes in backend command prompt
+        // Rec.Items = AiService.MakeList(listOfItems);
+        // //go through list of items and make a new item for the receipt
+
+        // // Call AiService
+        // var result = await _ai.ProcessImageUrlAsync(imageUrl);
+
+        //this will take the response and populate the item list for the receipt
+
+
+        /*make three functions each for part of the receipt
+        var storeNAme = await _ai.NameProcessImageUrlAsync(imageUrl);
+        var total =  await _ai.TotalProcessImageUrlAsync(imageUrl);
+        var List<string> products = await _ai.ProductProcessImageUrlAsync(image);
+
+        Do not need to create object need to impout data into reciept objects
+        need to look up how to import other functions from other C# files
+        
+        */
+
+        
     }
 }

@@ -144,12 +144,24 @@ const uploadToBackend = async (uri: any) => {
     body: formData,
   });
 
+  //store name
+  const store = await fetch(`${API_URL}/api/ai/imageName`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    body: formData,
+  });
+  
+  const st = await store.json();
   const json = await response.json();   
   //const text = await response.text(); //to test
   //console.log("RAW RESPONSE:", text); //to test
+  console.log ("Store Name: ", st.store);
   console.log("AI Response:", json.response);
   //return text;  to test
-  return json.response;
+  
+  return json.response, st.store;
 };
 
  const takePicture = async () => {
@@ -336,7 +348,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 30,
-    backgroundColor: "black",
   },
   shutterBtn: {
     backgroundColor: "transparent",

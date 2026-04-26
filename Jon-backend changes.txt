@@ -30,3 +30,6 @@ ran into issues becaue OpenAI could not reach locally hosted images
 Installed ngrok on computer
     made an account connected to github
     connects local server to wider internet for OpenAI
+
+4/25/26
+made changes to AiServices.cs to make Ai exports more consistent and to try and make receipts and receipt data objects
