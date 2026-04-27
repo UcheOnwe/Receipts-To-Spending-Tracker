@@ -20,8 +20,17 @@ import Feather from "@expo/vector-icons/Feather";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 //url api
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+//const API_URL = process.env.API_URL;
 
+import Constants from "expo-constants";
+
+//test
+const config = Constants.expoConfig ?? Constants.manifest;
+
+//? for if when Expo loads config differently
+const API_URL =  Constants.expoConfig?.extra?.apiUrl ??
+  Constants.manifest?.extra?.apiUrl;
+console.log("API URL:", API_URL);
 console.log("API URL:", API_URL);
 
 export default function TabTwoScreen() {
