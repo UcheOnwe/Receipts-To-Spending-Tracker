@@ -20,23 +20,15 @@ import Feather from "@expo/vector-icons/Feather";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 //url api
-import Constants from "expo-constants";
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-//test
-const config = Constants.expoConfig ?? Constants.manifest;
-
-//? for if when Expo loads config differently
-const API_URL =  Constants.expoConfig?.extra?.apiUrl ??
-  Constants.manifest?.extra?.apiUrl;
 console.log("API URL:", API_URL);
-console.log("Config extra:", config?.extra);
-console.log("API URL from config:", config?.extra?.apiUrl);
 
 export default function TabTwoScreen() {
    // call backend test function here 
   const callTest = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/ai/test`);
+      const response = await fetch(`${API_URL}/ai/test`);
       const text = await response.text();
       Alert.alert("Backend Response", text);
     } catch (error) {
@@ -48,7 +40,7 @@ export default function TabTwoScreen() {
   //call AI test function here
   const callAi = async () =>{
     try{
-      const response = await fetch(`${API_URL}/api/ai/openai-test`);
+      const response = await fetch(`${API_URL}/ai/openai-test`);
       const json = await response.json();
       Alert.alert("Open Ai says: ", json.response);
     }catch(error){
