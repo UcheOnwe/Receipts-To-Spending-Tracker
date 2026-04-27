@@ -28,8 +28,7 @@ import Constants from "expo-constants";
 const config = Constants.expoConfig ?? Constants.manifest;
 
 //? for if when Expo loads config differently
-const API_URL =  Constants.expoConfig?.extra?.apiUrl ??
-  Constants.manifest?.extra?.apiUrl;
+const API_URL =  process.env.EXPO_PUBLIC_API_URL;
 console.log("API URL:", API_URL);
 console.log("API URL:", API_URL);
 
@@ -61,7 +60,7 @@ export default function TabTwoScreen() {
   //call AI with prompt
   const callAiPrompt = async (prompt : string) =>{
     try{
-      const response = await fetch(`${API_URL}/api/ai/chat`, {
+      const response = await fetch(`${API_URL}/ai/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -127,55 +126,36 @@ export default function TabTwoScreen() {
 
   //to send photo uri to backend
 const uploadToBackend = async (uri: any) => {
+  console.log("Uploading image to backend...", uri);
+
   const formData = new FormData();
 
-  formData.append(
-    "file", 
-    {
-      uri,
-      type: "image/jpeg",
-      name: "photo.jpg",
-    } as any
-  );
+  formData.append("file", {
+    uri,
+    type: "image/jpeg",
+    name: "photo.jpg",
+  } as any);
 
-  /* const response = await fetch(`${API_URL}/api/ai/image`, {
+  const response = await fetch(`${API_URL}/ai/image`, {
     method: "POST",
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-    body: formData,
-  }); */
-
-  //receipt info
-  const Rec = await fetch(`${API_URL}/api/ai/imageName`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
     body: formData,
   });
 
-  if(!Rec.ok){
-    throw new Error("Failed to upload image");
+  console.log("Response status:", response.status);
+
+  if (!response.ok) {
+    throw new Error("Upload failed");
   }
 
-  const receipt = await Rec.json();
-  console.log("AI receipt dto: ", receipt);
+  const receipt = await response.json();
 
+  console.log("Backend returned:", receipt);
+
+  // OPTIONAL: save to DB
   const save = await api.createReceipt(receipt);
-  console.log("receipt saved", save);
+  console.log("receipt saved:", save);
 
-  return save;
-  /* const result = await api.createReceipt(Rec);
-  const st = await Rec.json();
-  const json = await response.json();   
-  //const text = await response.text(); //to test
-  //console.log("RAW RESPONSE:", text); //to test
-  console.log("Store Name: ", result);
-  console.log("AI Response:", json.response);
-  //return text;  to test
-  //json.response,
-  return  st.Rec; */
+  return receipt; 
 };
 
  const takePicture = async () => {
@@ -322,11 +302,11 @@ if (showCamera) {
         color="#841584"
         />
     </View>
-    {/* {aiResponse && (
-  <Text style={{ marginTop: 20, fontSize: 16 }}>
-    AI says: {aiResponse}
+    {aiResponse && (
+  <Text style = {{marginTop: 20 }}>
+    AI says: {JSON.stringify(aiResponse)}
   </Text>
-)} */}
+)} 
       {showCamera && <CameraViewComponent/>}
     </ParallaxScrollView>
     

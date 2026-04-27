@@ -7,6 +7,7 @@ using API.Models;
 using Microsoft.AspNetCore.Mvc;
 using API.Services;
 using API.Dtos;
+using SQLitePCL;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -97,28 +98,38 @@ public class AiController : ControllerBase
         }
 
         // Build a public URL for OpenAI
-        var imageUrl = $" https://unquellable-undeviously-idell.ngrok-free.dev/uploads/{fileName}";
-        //^^^ since using free version of ngrok may need to update each time^^^
+        var imageUrl = $" {Request.Scheme}://{Request.Host}/uploads/{fileName}"; //Build URL based on who called this API
+        
         /*
             whenever start new session in command prompt: ngrok http *portnumber* for me 5000
         */
 
         //create receipt object
         CreateReceiptDto Rec = new CreateReceiptDto();
-        //put in store data
-        Rec.Store = await _ai.NameProcessImageUrlAsync(imageUrl);
+        try{
+            //put in store data
+            Rec.Store = await _ai.NameProcessImageUrlAsync(imageUrl); 
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("AI ERROR: " + ex.Message);
+            Rec.Store = "NO NAME FOUND";
+        }
+        //await _ai.NameProcessImageUrlAsync(imageUrl);
+        return Ok(Rec);
+        //await _ai.NameProcessImageUrlAsync(imageUrl); (Commented for now because it crashes everything that has to do with receiving image)
 
         //create product list
         //get list of items with quantity and price from AI
-        var listOfItems = await _ai.ProductProcessImageUrlAsync(imageUrl);
-        Console.Write("****" + listOfItems); //writes in backend command prompt
+        //var listOfItems = await _ai.ProductProcessImageUrlAsync(imageUrl);
+        //Console.Write("****" + listOfItems); //writes in backend command prompt
         //go through list of items and make a new item for the receipt
-        Rec.Items = AiService.MakeList(listOfItems);
+        //Rec.Items = AiService.MakeList(listOfItems);
         //crete Receipt
        // var reslult = await api.CreateReceiptAsync(Rec);
 
         // Call AiService
-        var result = await _ai.ProcessImageUrlAsync(imageUrl);
+        //var result = await _ai.ProcessImageUrlAsync(imageUrl);
 
         //this will take the response and populate the item list for the receipt
 
@@ -133,7 +144,7 @@ public class AiController : ControllerBase
         
         */
 
-        return Ok(new { response = result });
+        //return Ok(new { response = result });
     }
 
     [HttpPost("imageName")]
@@ -155,7 +166,8 @@ public class AiController : ControllerBase
         }
 
         // Build a public URL for OpenAI
-        var imageUrl = $" https://unquellable-undeviously-idell.ngrok-free.dev/uploads/{fileName}";
+        var imageUrl = $" {Request.Scheme}://{Request.Host}/uploads/{fileName}"; //Changed to whatever URL is hitting the backend rather than
+        //Being Hardcoded and messing up when URL changes 
         //^^^ since using free version of ngrok may need to update each time^^^
         /*
             whenever start new session in command prompt: ngrok http *portnumber* for me 5000
