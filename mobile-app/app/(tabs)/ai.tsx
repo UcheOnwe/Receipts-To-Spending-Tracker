@@ -10,7 +10,8 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 //to put a button in react antive
 import { Button, View, Alert, Text, Pressable } from 'react-native';
-
+//handle receipt backend calls
+import api from '../../Services/api'; // Our API service (Handles backend calls)
 //import for camera
 import {CameraType, CameraView, useCameraPermissions, CameraMode } from 'expo-camera';
 import {useState, useRef } from 'react';
@@ -136,7 +137,16 @@ const uploadToBackend = async (uri: any) => {
     } as any
   );
 
-  const response = await fetch(`${API_URL}/api/ai/image`, {
+  /* const response = await fetch(`${API_URL}/api/ai/image`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    body: formData,
+  }); */
+
+  //receipt info
+  const Rec = await fetch(`${API_URL}/api/ai/imageName`, {
     method: "POST",
     headers: {
       "Content-Type": "multipart/form-data",
@@ -144,24 +154,27 @@ const uploadToBackend = async (uri: any) => {
     body: formData,
   });
 
-  //store name
-  const store = await fetch(`${API_URL}/api/ai/imageName`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-    body: formData,
-  });
-  
-  const st = await store.json();
+  if(!Rec.ok){
+    throw new Error("Failed to upload image");
+  }
+
+  const receipt = await Rec.json();
+  console.log("AI receipt dto: ", receipt);
+
+  const save = await api.createReceipt(receipt);
+  console.log("receipt saved", save);
+
+  return save;
+  /* const result = await api.createReceipt(Rec);
+  const st = await Rec.json();
   const json = await response.json();   
   //const text = await response.text(); //to test
   //console.log("RAW RESPONSE:", text); //to test
-  console.log ("Store Name: ", st.store);
+  console.log("Store Name: ", result);
   console.log("AI Response:", json.response);
   //return text;  to test
-  
-  return json.response, st.store;
+  //json.response,
+  return  st.Rec; */
 };
 
  const takePicture = async () => {

@@ -1,5 +1,9 @@
 namespace API.Controllers;
 
+//from receipt api
+using API.Data;
+using API.Models;
+
 using Microsoft.AspNetCore.Mvc;
 using API.Services;
 using API.Dtos;
@@ -108,8 +112,10 @@ public class AiController : ControllerBase
         //get list of items with quantity and price from AI
         var listOfItems = await _ai.ProductProcessImageUrlAsync(imageUrl);
         Console.Write("****" + listOfItems); //writes in backend command prompt
-        Rec.Items = AiService.MakeList(listOfItems);
         //go through list of items and make a new item for the receipt
+        Rec.Items = AiService.MakeList(listOfItems);
+        //crete Receipt
+       // var reslult = await api.CreateReceiptAsync(Rec);
 
         // Call AiService
         var result = await _ai.ProcessImageUrlAsync(imageUrl);
@@ -157,34 +163,17 @@ public class AiController : ControllerBase
 
         //create receipt object
         CreateReceiptDto Rec = new CreateReceiptDto();
+        Console.WriteLine("created receipt object");
         //put in store data
         Rec.Store = await _ai.NameProcessImageUrlAsync(imageUrl);
-        var result = await _ai.NameProcessImageUrlAsync(imageUrl);
-        Console.Write("name has been processed");
-        return Ok(new { response = result });
-        // //create product list
-        // //get list of items with quantity and price from AI
-        // var listOfItems = await _ai.ProductProcessImageUrlAsync(imageUrl);
-        // Console.Write(listOfItems); //writes in backend command prompt
-        // Rec.Items = AiService.MakeList(listOfItems);
-        // //go through list of items and make a new item for the receipt
-
-        // // Call AiService
-        // var result = await _ai.ProcessImageUrlAsync(imageUrl);
-
-        //this will take the response and populate the item list for the receipt
-
-
-        /*make three functions each for part of the receipt
-        var storeNAme = await _ai.NameProcessImageUrlAsync(imageUrl);
-        var total =  await _ai.TotalProcessImageUrlAsync(imageUrl);
-        var List<string> products = await _ai.ProductProcessImageUrlAsync(image);
-
-        Do not need to create object need to impout data into reciept objects
-        need to look up how to import other functions from other C# files
-        
-        */
-
-        
+         Console.WriteLine("name has been processed");                          ///
+        //get list of items
+        Console.WriteLine("make list of items");
+        var listOfItems = await _ai.ProductProcessImageUrlAsync(imageUrl);
+        Console.WriteLine("polulating items");
+        Rec.Items = AiService.MakeList(listOfItems);
+        Console.WriteLine("return receipt");
+        return Ok(Rec);
+       
     }
 }

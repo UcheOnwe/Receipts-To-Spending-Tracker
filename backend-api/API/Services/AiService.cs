@@ -70,7 +70,7 @@ public class AiService
             new ChatMessageContentPart[]
             {
                 ChatMessageContentPart.CreateTextPart(
-                    "Please give me the following information: Name of the store"),
+                    "Please return store name only, Example: Walmart. If Unable return:No name found"),
                 ChatMessageContentPart.CreateImagePart(new Uri(imageUrl))    
             }
         );
@@ -170,18 +170,18 @@ public class AiService
 							p = p + products[i];
 						}
                     string tempP="";
-                    for(int i = 0; i<p.Length;i++)
+                    
+                    foreach(char c in p)
                         {
-                            if(!char.IsLetter(p[i]))               
+                            if(char.IsDigit(c) || c == '.')
                             {
-                                if(p[i] == '.')
-                                tempP +=p[i];
+                                tempP+=c;
                             }
-                        
-                        }   
+                        }
+                      
 					pr = Convert.ToDecimal(p);
-					count++;
-					start = x+1;
+                    price = pr;
+					
                     //populate 1 item
                     CreateReceiptItemDto item = new CreateReceiptItemDto();
                     item.ItemName = name;
@@ -194,6 +194,8 @@ public class AiService
                     price = 0.0M;
                     quantity = 1;
 
+                    count++;
+					start = x+1;
 					break;
                 }
 					

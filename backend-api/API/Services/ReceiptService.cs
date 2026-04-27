@@ -94,7 +94,7 @@ public class ReceiptService
         receipt.UserId = 1; //Hardcoded for now
         receipt.Store = dto.Store;
         receipt.Amount = totalAmount;
-        receipt.Date = dto.Date;
+        receipt.Date = dto.Date ;                                   //what if no date?
 
         //Step 3: Add each item to receipt
         for (int i = 0; i < dto.Items.Count; i++)
