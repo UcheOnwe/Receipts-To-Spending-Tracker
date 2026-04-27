@@ -1,0 +1,4 @@
+removed from package.json
+"dependencies": {
+    "expo-haptics": "~15.0.8",
+    }
