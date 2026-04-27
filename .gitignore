@@ -421,3 +421,4 @@ FodyWeavers.xsd
 *.db-shm
 *.db-wal
 .env
+backend-api/API/wwwroot/uploads/
