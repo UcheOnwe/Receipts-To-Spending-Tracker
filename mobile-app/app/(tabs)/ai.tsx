@@ -321,11 +321,11 @@ if (showCamera) {
         color="#841584"
         />
     </View>
-    {aiResponse && (
+    {/* {aiResponse && (
   <Text style={{ marginTop: 20, fontSize: 16 }}>
     AI says: {aiResponse}
   </Text>
-)}
+)} */}
       {showCamera && <CameraViewComponent/>}
     </ParallaxScrollView>
     
