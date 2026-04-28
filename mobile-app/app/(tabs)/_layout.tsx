@@ -6,6 +6,8 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
+import Feather from '@expo/vector-icons/Feather';
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
@@ -35,6 +37,27 @@ export default function TabLayout() {
         options={{
           title: 'AI',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="scan"
+        options={{
+          title: 'Scan',
+          tabBarIcon: ({ color }) => <Feather name="camera" size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="tracker"
+        options={{
+          title: 'Tracker',
+          tabBarIcon: ({ color }) => <Feather name='list' size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="(dtabs)"
+        options={{
+          title: 'Data',
+          tabBarIcon: ({ color }) => <Feather name='file-text' size={24} color={color} />,
         }}
       />
     </Tabs>
