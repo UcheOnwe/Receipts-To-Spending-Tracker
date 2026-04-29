@@ -20,18 +20,10 @@ import Feather from "@expo/vector-icons/Feather";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 //url api
-//const API_URL = process.env.API_URL;
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 import Constants from "expo-constants";
-
-//test
-const config = Constants.expoConfig ?? Constants.manifest;
-
-//? for if when Expo loads config differently
-const API_URL =  process.env.EXPO_PUBLIC_API_URL;
-console.log("API URL:", API_URL);
-console.log("API URL:", API_URL);
-
+console.log("api url:", API_URL);
 export default function TabTwoScreen() {
    // call backend test function here 
   const callTest = async () => {
@@ -136,8 +128,11 @@ const uploadToBackend = async (uri: any) => {
     name: "photo.jpg",
   } as any);
 
-  const response = await fetch(`${API_URL}/ai/image`, {
+  const response = await fetch(`${API_URL}/ai/imageName`, {
     method: "POST",
+    headers:{
+      "Content-Type": "multipart/form-data",
+    },
     body: formData,
   });
 
@@ -155,7 +150,8 @@ const uploadToBackend = async (uri: any) => {
   const save = await api.createReceipt(receipt);
   console.log("receipt saved:", save);
 
-  return receipt; 
+ // return receipt; 
+ return save;
 };
 
  const takePicture = async () => {
@@ -302,11 +298,11 @@ if (showCamera) {
         color="#841584"
         />
     </View>
-    {aiResponse && (
+    {/* {aiResponse && (
   <Text style = {{marginTop: 20 }}>
     AI says: {JSON.stringify(aiResponse)}
   </Text>
-)} 
+)}  */}
       {showCamera && <CameraViewComponent/>}
     </ParallaxScrollView>
     

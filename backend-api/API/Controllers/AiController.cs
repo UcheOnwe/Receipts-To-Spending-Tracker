@@ -1,5 +1,5 @@
 namespace API.Controllers;
-
+using DotNetEnv;
 //from receipt api
 using API.Data;
 using API.Models;
@@ -13,6 +13,7 @@ using SQLitePCL;
 [Route("api/[controller]")]
 public class AiController : ControllerBase
 {
+    
    /*  private readonly AiService _service;
 
     //for ai response test
@@ -164,9 +165,14 @@ public class AiController : ControllerBase
         {
             await file.CopyToAsync(stream);
         }
-
+        //get ngrok address
+        string grok = Env.GetString("GROK_API");
         // Build a public URL for OpenAI
-        var imageUrl = $" {Request.Scheme}://{Request.Host}/uploads/{fileName}"; //Changed to whatever URL is hitting the backend rather than
+       
+        Console.WriteLine("grock address:" + grok);
+        //var imageUrl = $"{Request.Scheme}://{Request.Host}/uploads/{fileName}"; //Changed to whatever URL is hitting the backend rather than
+        var imageUrl =$"{grok}/uploads/{fileName}";
+       
         //Being Hardcoded and messing up when URL changes 
         //^^^ since using free version of ngrok may need to update each time^^^
         /*
@@ -176,6 +182,7 @@ public class AiController : ControllerBase
         //create receipt object
         CreateReceiptDto Rec = new CreateReceiptDto();
         Console.WriteLine("created receipt object");
+        Console.WriteLine("image url: " +imageUrl);
         //put in store data
         Rec.Store = await _ai.NameProcessImageUrlAsync(imageUrl);
          Console.WriteLine("name has been processed");                          ///
