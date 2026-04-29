@@ -16,6 +16,8 @@ export default {
     },
 
     android: {
+      // Allow http:// to your PC on LAN (required for EXPO_PUBLIC_API_URL over HTTP on many devices)
+      usesCleartextTraffic: true,
       adaptiveIcon: {
         backgroundColor: "#E6F4FE",
         foregroundImage: "./assets/images/android-icon-foreground.png",

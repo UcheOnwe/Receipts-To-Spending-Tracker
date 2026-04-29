@@ -2,26 +2,23 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
+import { useFonts } from 'expo-font';
+import { ActivityIndicator, View } from 'react-native';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import {
-  Inter_400Regular,
-  Inter_600SemiBold,
-  Inter_700Bold,
-} from '@expo-google-fonts/inter';
+import { Inter_400Regular, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import { JacquesFrancois_400Regular } from '@expo-google-fonts/jacques-francois';
 import { Kameron_700Bold } from '@expo-google-fonts/kameron';
 import { Roboto_600SemiBold } from '@expo-google-fonts/roboto';
-import { useFonts } from 'expo-font';
-import * as ScreenCapture from 'expo-screen-capture';
-import { useEffect } from 'react';
-import { ActivityIndicator, InteractionManager, StyleSheet, View } from 'react-native';
-import { setupTestUser } from '@/Services/api';
-import { colors } from '@/theme/fonts';
+
+import { useColorScheme } from '@/hooks/use-color-scheme';
+
+export const unstable_settings = {
+  anchor: '(tabs)',
+};
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
+  const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_600SemiBold,
     Inter_700Bold,
@@ -30,30 +27,9 @@ export default function RootLayout() {
     Roboto_600SemiBold,
   });
 
-  useEffect(() => {
-    if (!loaded) {
-      return;
-    }
-    void setupTestUser().catch(() => {
-      /* Backend may be offline during UI-only dev */
-    });
-  }, [loaded]);
-
-  useEffect(() => {
-    if (!loaded) {
-      return;
-    }
-    const task = InteractionManager.runAfterInteractions(() => {
-      void ScreenCapture.allowScreenCaptureAsync().catch(() => {
-        /* No-op if unsupported */
-      });
-    });
-    return () => task.cancel();
-  }, [loaded]);
-
-  if (!loaded) {
+  if (!fontsLoaded) {
     return (
-      <View style={styles.boot}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="#173372" />
       </View>
     );
@@ -61,19 +37,15 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack initialRouteName="index">
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="new-user" options={{ headerShown: false }} />
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="sign-up" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  boot: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.bg,
-  },
-});
