@@ -99,7 +99,27 @@ public class AiController : ControllerBase
         }
 
         // Build a public URL for OpenAI
-        var imageUrl = $" {Request.Scheme}://{Request.Host}/uploads/{fileName}"; //Build URL based on who called this API
+        //var imageUrl = $" {Request.Scheme}://{Request.Host}/uploads/{fileName}"; //Build URL based on who called this API
+        
+
+        //Get BASE URL (supports teammate + you)
+        string baseUrl = Environment.GetEnvironmentVariable("API_URL")
+        ?? Env.GetString("API_URL")
+        ?? Env.GetString("GROK_API");
+
+        //Build image URL with fallback
+        string imageUrl;
+
+        if (!string.IsNullOrEmpty(baseUrl))
+        {
+            imageUrl = $"{baseUrl}/uploads/{fileName}";
+        }
+        else
+        {
+            imageUrl = $"{Request.Scheme}://{Request.Host}/uploads/{fileName}";
+        }
+
+        Console.WriteLine("Final Image URL: " + imageUrl);
         
         /*
             whenever start new session in command prompt: ngrok http *portnumber* for me 5000
