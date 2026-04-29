@@ -33,3 +33,6 @@ Installed ngrok on computer
 
 4/25/26
 made changes to AiServices.cs to make Ai exports more consistent and to try and make receipts and receipt data objects
+
+4/28/26
+added ngok to env and changed url in photo processing
