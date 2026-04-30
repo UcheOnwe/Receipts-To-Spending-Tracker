@@ -28,7 +28,7 @@ export default function TabTwoScreen() {
    // call backend test function here 
   const callTest = async () => {
     try {
-      const response = await fetch(`${API_URL}/ai/test`);
+      const response = await fetch(`${API_URL}/Ai/test`);
       const text = await response.text();
       Alert.alert("Backend Response", text);
     } catch (error) {
@@ -40,7 +40,7 @@ export default function TabTwoScreen() {
   //call AI test function here
   const callAi = async () =>{
     try{
-      const response = await fetch(`${API_URL}/ai/openai-test`);
+      const response = await fetch(`${API_URL}/Ai/openai-test`);
       const json = await response.json();
       Alert.alert("Open Ai says: ", json.response);
     }catch(error){
@@ -52,7 +52,7 @@ export default function TabTwoScreen() {
   //call AI with prompt
   const callAiPrompt = async (prompt : string) =>{
     try{
-      const response = await fetch(`${API_URL}/ai/chat`, {
+      const response = await fetch(`${API_URL}/Ai/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -128,7 +128,7 @@ const uploadToBackend = async (uri: any) => {
     name: "photo.jpg",
   } as any);
 
-  const response = await fetch(`${API_URL}/ai/imageName`, {
+  const response = await fetch(`${API_URL}/Ai/imageName`, {
     method: "POST",
     headers:{
       "Content-Type": "multipart/form-data",

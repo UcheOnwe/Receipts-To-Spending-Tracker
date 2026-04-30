@@ -3,274 +3,17 @@ import { Image } from 'expo-image';
 //to navigate to create-receipt.tsx
 import {useRouter} from 'expo-router';
 
-<<<<<<< HEAD
-const logo = require('@/assets/images/icon.png');
-import { Collapsible } from '@/components/ui/collapsible';
-import { ExternalLink } from '@/components/external-link';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
-//to put a button in react antive
-import { Button, View, Alert, Text, Pressable ,TouchableOpacity, StyleSheet} from 'react-native';
-//handle receipt backend calls
-import api from '../../Services/api'; // Our API service (Handles backend calls)
-//import for camera
-import {CameraType, CameraView, useCameraPermissions, CameraMode } from 'expo-camera';
-import {useState, useRef } from 'react';
-import AntDesign from "@expo/vector-icons/AntDesign";
-import Feather from "@expo/vector-icons/Feather";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-
-//url api
-//const API_URL = process.env.API_URL;
-
-import Constants from "expo-constants";
-
-//test
-const config = Constants.expoConfig ?? Constants.manifest;
-
-//? for if when Expo loads config differently
-const API_URL =  process.env.EXPO_PUBLIC_API_URL;
-console.log("API URL:", API_URL);
-console.log("API URL:", API_URL);
-
-export default function TabTwoScreen() {
-   // call backend test function here 
-  const callTest = async () => {
-    try {
-      const response = await fetch(`${API_URL}/ai/test`);
-      const text = await response.text();
-      Alert.alert("Backend Response", text);
-    } catch (error) {
-      Alert.alert("Error", "Could not reach backend");
-      console.error(error);
-    }
-  };
-
-  //call AI test function here
-  const callAi = async () =>{
-    try{
-      const response = await fetch(`${API_URL}/ai/openai-test`);
-      const json = await response.json();
-      Alert.alert("Open Ai says: ", json.response);
-    }catch(error){
-      Alert.alert("Error", "could not reach OpenAI");
-      console.error(error);
-    }
-  }
-
-  //call AI with prompt
-  const callAiPrompt = async (prompt : string) =>{
-    try{
-      const response = await fetch(`${API_URL}/ai/chat`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ prompt })
-      });
-
-      const data = await response.json();
-      Alert.alert("Open Ai says: ", data.response);
-    }catch(error){
-      Alert.alert("Error", "could not reach OpenAI");
-      console.error(error);
-    }
-
-  }
-  //Ai response
-   const [aiResponse, setAiResponse] = useState("");
-  //get camera permissions
-  const [showCamera, setShowCamera] = useState(false);
-  const [permission, requestPermission] = useCameraPermissions();
-  const [facing, setFacing] = useState<CameraType>('back');
-  //{console.log (permission?.granted)};
-  const ref = useRef<CameraView>(null);
-  const [mode, setMode] = useState<CameraMode>("picture");
-  const [uri, setUri] = useState<string | null>(null);
-  const [recording, setRecording] = useState(false);
-
-
-
-  function CameraViewComponent(){ 
-
-      if(!permission) return null; //camera permission still loading
-      if (!permission.granted){ // camera permission not granted
-        return(
-          <View style ={styles.container}>
-            <Text>Permission needed to use the camera</Text>
-            <Button title="Grant Permission" onPress={() =>{console.log("push granted");
-                          requestPermission()
-                          console.log(permission.granted);
-                          }} />
-            {/*For if we do not grant permission */}
-            <View style={{ marginTop: 10 }}>
-              <Button 
-                title="Cancel" 
-                color="red"
-                onPress={() => setShowCamera(false)} 
-              />
-            </View>
-          </View>
-        );
-      }
-    return (
-      <View style={{flex:1, backgroundColor:"black"}}>
-        <View style ={{paddingTop: 50, paddingHorizontal:20}}>
-          <Button title="Close Camera" onPress ={() => setShowCamera(false)} />
-        </View>
-      <View style={{flex:1}}>
-        {uri ? renderPicture(uri) : renderCamera()}
-      </View>
-      </View>
-    );
-  }
-
-  //to send photo uri to backend
-const uploadToBackend = async (uri: any) => {
-  console.log("Uploading image to backend...", uri);
-
-  const formData = new FormData();
-
-  formData.append("file", {
-    uri,
-    type: "image/jpeg",
-    name: "photo.jpg",
-  } as any);
-
-  const response = await fetch(`${API_URL}/ai/image`, {
-    method: "POST",
-    body: formData,
-  });
-
-  console.log("Response status:", response.status);
-
-  if (!response.ok) {
-    throw new Error("Upload failed");
-  }
-
-  const receipt = await response.json();
-
-  console.log("Backend returned:", receipt);
-
-  // OPTIONAL: save to DB
-  const save = await api.createReceipt(receipt);
-  console.log("receipt saved:", save);
-
-  return receipt; 
-};
-
- const takePicture = async () => {
-    const photo = await ref.current?.takePictureAsync();
-    if (photo?.uri) {
-      setUri(photo.uri);
-      //send to backend to send to AI
-      const aiResult = await uploadToBackend(photo.uri);
-      setAiResponse(aiResult);
-    }
-  };
-
-  const recordVideo = async () => {
-    if (recording) {
-      setRecording(false);
-      ref.current?.stopRecording();
-      return;
-    }
-    setRecording(true);
-    const video = await ref.current?.recordAsync();
-    console.log({ video });
-  };
-
-  const toggleMode = () => {
-    setMode((prev) => (prev === "picture" ? "video" : "picture"));
-  };
-
-  const toggleFacing = () => {
-    setFacing((prev) => (prev === "back" ? "front" : "back"));
-  };
-
-   const renderPicture = (uri: any) => {
-    return (
-      <View style={{flex: 1}}>
-        <Image
-          source={{ uri }}
-          contentFit="contain"
-          style={{ flex: 1 }}
-        />
-        <Button onPress={() => setUri(null)} title="Take another picture" />
-      </View>
-    );
-  };
-
-   const renderCamera = () => {
-    return (
-        <View style={styles.cameraContainer}>
-          <CameraView
-            style={styles.camera}
-            ref={ref}
-            mode={mode}
-            facing={facing}
-            mute={false}
-            responsiveOrientationWhenOrientationLocked
-          />
-          <View style={styles.shutterContainer}>
-            <Pressable onPress={toggleMode}>
-              {mode === "picture" ? (
-                <AntDesign name="picture" size={32} color="white" />
-              ) : (
-                <Feather name="video" size={32} color="white" />
-              )}
-            </Pressable>
-            <Pressable onPress={mode === "picture" ? takePicture : recordVideo}>
-              {({ pressed }) => (
-                <View
-                  style={[
-                    styles.shutterBtn,
-                    {
-                      opacity: pressed ? 0.5 : 1,
-                    },
-                  ]}
-                >
-                  <View
-                    style={[
-                      styles.shutterBtnInner,
-                      {
-                        backgroundColor: mode === "picture" ? "white" : "red",
-                      },
-                    ]}
-                  />
-                </View>
-              )}
-            </Pressable>
-            <Pressable onPress={toggleFacing}>
-              <FontAwesome6 name="rotate-left" size={32} color="white" />
-            </Pressable>
-          </View>
-        </View>
-    );
-  };
-
-//To show only camera
-if (showCamera) {
-  return <CameraViewComponent />;
-}
-
-
-=======
 //from ai.tsx
   //handle receipt backend calls
   import api from '../../Services/api'; // Our API service (Handles backend calls)
   //to put a button in react antive
-  import { Button, Alert, Pressable } from 'react-native';
+  import { Button, Alert, Pressable, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
   //from camera section
-  import {CameraType, CameraView, useCameraPermissions, CameraMode } from 'expo-camera';
+  import {CameraType, CameraView, useCameraPermissions } from 'expo-camera';
   import {useState, useRef } from 'react';
   import AntDesign from "@expo/vector-icons/AntDesign";
   import Feather from "@expo/vector-icons/Feather";
   import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
->>>>>>> 9bbf5bb4a7ff9c06449fc527073e4da50c31b351
 
   const logo = require('@/assets/images/icon.png');
 
@@ -280,8 +23,6 @@ if (showCamera) {
 
   import Constants from "expo-constants";
 
-<<<<<<< HEAD
-=======
 export default function Index() {
   
   //Camera stuff
@@ -485,7 +226,6 @@ const uploadToBackend = async (uri: any) => {
 if (showCamera) {
   return <CameraViewComponent />;
 }
->>>>>>> 9bbf5bb4a7ff9c06449fc527073e4da50c31b351
   return (
     
     <View style={styles.containerT}>
@@ -495,21 +235,12 @@ if (showCamera) {
       </View>
       <View  style={styles.containerH}>
         <Text style={styles.textH}>Scan Receipt</Text>
-<<<<<<< HEAD
-        < TouchableOpacity style={styles.Button}  onPress={() => {console.log("Pressed!");
-          console.log(permission?.granted);
-                      setShowCamera(true);
-        }}>
-        <Text style={styles.ButtonText}>Take a Photo</Text>
-         <Image style={styles.buttonLogoCam} source={require('@/assets/images/Camera.png')}/>
-=======
         < TouchableOpacity style={styles.Button}
             onPress={()=> {console.log("Pressed!");
                 console.log(permission?.granted);
                       setShowCamera(true)}}>
           <Text style={styles.ButtonText}>Take a Photo</Text>
           <Image style={styles.buttonLogoCam} source={require('@/assets/images/Camera.png')}/>
->>>>>>> 9bbf5bb4a7ff9c06449fc527073e4da50c31b351
          </TouchableOpacity>
         <Text style={styles.Or}>Or</Text>
         < TouchableOpacity style={styles.Button}>

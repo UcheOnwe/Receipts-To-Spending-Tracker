@@ -190,8 +190,9 @@ public class AiController : ControllerBase
         // Build a public URL for OpenAI
        
         Console.WriteLine("grock address:" + grok);
-        //var imageUrl = $"{Request.Scheme}://{Request.Host}/uploads/{fileName}"; //Changed to whatever URL is hitting the backend rather than
+        //var imageUrl = $"https://{Request.Host}/uploads/{fileName}"; //Changed to whatever URL is hitting the backend rather than
         var imageUrl =$"{grok}/uploads/{fileName}";
+        Console.WriteLine("Final Image URL: " + imageUrl);
        
         //Being Hardcoded and messing up when URL changes 
         //^^^ since using free version of ngrok may need to update each time^^^
