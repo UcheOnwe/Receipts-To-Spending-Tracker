@@ -2,6 +2,8 @@ import {Text, View, StyleSheet, Button, ScrollView, Alert, TouchableOpacity, Tex
 import { useState } from 'react';
 import api from '../Services/api'; // Our API service (Handles backend calls)
 import {useRouter} from 'expo-router'; //for navigation
+import { Picker } from '@react-native-picker/picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 
 
@@ -15,7 +17,7 @@ export default function CreateReceiptScreen(){
 
     //Basic Receipt info
     const [store, setStore] = useState('');    //store name
-    const [date, setDate] = useState('');      // Purchase date
+    const [date, setDate] = useState(new Date());     // Purchase date
 
     //Current Item being added (temporary storage)
     const[itemName, setItemName] = useState('');
@@ -29,6 +31,8 @@ export default function CreateReceiptScreen(){
             quantity: number;
             category: string;
         };
+
+    const [showPicker, setShowPicker] = useState(false);
 
     //List of all items added to this receipt
     const [items, setItems] = useState<Item[]>([]);
@@ -267,13 +271,33 @@ export default function CreateReceiptScreen(){
                     placeholder = "e.g., Walmart"
                 />
 
-                <Text style = {styles.label}>Date (YYYY-MM-DD)</Text>
-                <TextInput
-                    style = {styles.input}
-                    value = {date}
-                    onChangeText = {setDate}
-                    placeholder="2025-02-27"
-                />
+                <Text style = {styles.label}>Date</Text>
+                <TouchableOpacity
+                    style={styles.input}
+                    onPress={() => setShowPicker(true)}
+                >
+                    <Text>
+                        {date.toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                        })}
+                    </Text>
+                </TouchableOpacity>
+
+                {showPicker && (
+                    <DateTimePicker
+                        value={date}
+                        mode="date"
+                        display="default"
+                        onChange={(event, selectedDate) => {
+                            setShowPicker(false);
+                            if (selectedDate) {
+                                setDate(selectedDate);
+                            }
+                            }}
+                        />
+                    )}
             </View>
 
             {/* SECTION 2: ADD Items form*/}
@@ -306,12 +330,20 @@ export default function CreateReceiptScreen(){
                 />
 
                 <Text style={styles.label}>Category</Text>
-                <TextInput
-                    style={styles.input}
-                    value={itemCategory}
-                    onChangeText={setItemCategory}
-                    placeholder="Food & Dining"
-                />
+                <View style={styles.pickerContainer}>
+                    <Picker
+                        style={styles.picker}
+                        selectedValue={itemCategory}
+                        onValueChange={(value) => setItemCategory(value)}
+                    >
+                        <Picker.Item label="Food & Dining" value="Food & Dining" />
+                        <Picker.Item label="Groceries" value="Groceries" />
+                        <Picker.Item label="Entertainment" value="Entertainment" />
+                        <Picker.Item label="Shopping" value="Shopping" />
+                        <Picker.Item label="Transportation" value="Transportation" />
+                        <Picker.Item label="Other" value="Other" />
+                    </Picker>
+                </View>
 
                 <Button title="Add Item" onPress={handleAddItem} />
             </View>
@@ -339,6 +371,19 @@ export default function CreateReceiptScreen(){
 // STYLES - How everything looks
 // ============================================
 const styles = StyleSheet.create({
+
+    pickerContainer: {
+        backgroundColor: '#29d582',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        marginBottom: 10,
+    },
+
+    picker: {
+        color: '#ffffff',
+    },
+    
     container: {
         flex: 1,
         padding: 20,

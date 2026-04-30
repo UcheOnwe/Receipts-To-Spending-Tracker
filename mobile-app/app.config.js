@@ -41,6 +41,9 @@ export default {
           "recordAudioAndroid": true,
         }
       ],
+
+      "@react-native-community/datetimepicker",
+
       "expo-router",
       [
         "expo-splash-screen",
