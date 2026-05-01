@@ -1,8 +1,9 @@
 //Imports - Bring in what we need 
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+
 import { useState, useEffect } from 'react';
 import api from '../../Services/api'; //Our API Services  
-import { useRouter } from 'expo-router';
+import { useRouter } from 'expo-router'; //For Navigation
 
 //Runs code every time this screen becomes active (Used to refresh data when coming back)
 import { useFocusEffect } from 'expo-router';
@@ -97,17 +98,33 @@ console.log('public expo',BASE_URL);
     items: any[];
   }
 
+  //handles displaying receipt details
+  function handleReceiptPress(receiptId){
+        // Navigate to receipt details screen with the ID
+        router.push(`/receipt/${receiptId}`);
+  }
+
+
   //RENDER EACH RECEIPT CALLED FOR EACH ITEM
   //This function receives an object with an item  property, and that item is of type Receipt
   function renderReceipt({ item }: {item: Receipt}){ //{item} means take the item property from an object
     //item = One receipt from the array
     return(
-    <View style = {styles.receiptCard}> 
+    <TouchableOpacity 
+                onPress={function() { handleReceiptPress(item.receiptId); }}
+                style={styles.receiptCard}
+    >
       <Text style = {styles.storeName}> {item.store}</Text>
       <Text style={styles.amount}>${item.amount.toFixed(2)}</Text>
-      <Text style={styles.date}>{item.date}</Text>
+      <Text style={styles.date}>
+        {new Date(item.date).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        })}
+      </Text>
       <Text style={styles.itemCount}>{item.items?.length || 0} items</Text>
-    </View>
+    </TouchableOpacity>
     );
   }
 

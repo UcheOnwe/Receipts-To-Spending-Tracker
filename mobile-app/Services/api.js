@@ -88,7 +88,7 @@ async function createReceipt(receiptData)
 
 //Function 3: Get Receipt by ID
 //Connects to ReceiptController.GetById(id)
-async function getReceiptById()
+async function getReceiptById(id)
 {
     
     try
@@ -115,7 +115,7 @@ async function getReceiptById()
     }
 }
 
-async function deleteReceipt(){
+async function deleteReceipt(id){
     try
     {
         //step 1: Build URL WITH ID NUMBER
