@@ -52,11 +52,7 @@ export default function Index() {
             {
               text:"Exit Camera",
               style:"cancel",
-              onPress:() => {
-                setPhotos([]);    //clears photo
-                setUri(null);     //clears uri
-                setShowCamera(false);     //closes camera
-              },
+              onPress:() => setShowCamera(false),
             },
             {
               text: "Process Receipt",
@@ -367,10 +363,16 @@ const styles = StyleSheet.create({
   },
 
 Button: {
-  backgroundColor: '#cacaca',
+  backgroundColor: '#cecece',
  alignSelf: 'center',
  verticalAlign: 'middle',
   color: '#969696',
+  borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
   width: 300,
   height: 220,
   top: 35,
