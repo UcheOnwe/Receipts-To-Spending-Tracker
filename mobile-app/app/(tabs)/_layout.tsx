@@ -47,13 +47,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="tracker"
-        options={{
-          title: 'Tracker',
-          tabBarIcon: ({ color }) => <Feather name='list' size={24} color={color} />,
-        }}
-      />
-      <Tabs.Screen
         name="data"
         options={{
           title: 'Data',
