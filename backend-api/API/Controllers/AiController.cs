@@ -168,7 +168,7 @@ public class AiController : ControllerBase
         //return Ok(new { response = result });
     }
 
-    [HttpPost("imageName")]
+    /* [HttpPost("imageName")]
     public async Task<IActionResult> ProcessImageName(IFormFile file)
     {
         if (file == null || file.Length == 0)
@@ -199,7 +199,7 @@ public class AiController : ControllerBase
         /*
             whenever start new session in command prompt: ngrok http *portnumber* for me 5000
         */
-
+/*
         //create receipt object
         CreateReceiptDto Rec = new CreateReceiptDto();
         Console.WriteLine("created receipt object");
@@ -210,6 +210,65 @@ public class AiController : ControllerBase
         //get list of items
         Console.WriteLine("make list of items");
         var listOfItems = await _ai.ProductProcessImageUrlAsync(imageUrl);
+        Console.WriteLine("polulating items");
+        Rec.Items = AiService.MakeList(listOfItems);
+        Console.WriteLine("return receipt");
+        return Ok(Rec);
+       
+    } */
+
+    //test for create-receipt page and to receive an array of uri
+    [HttpPost("imageName")]
+    public async Task<IActionResult> ProcessImageName(List<IFormFile> files)
+    {
+        if (files == null || files.Count == 0)
+            return BadRequest("No file uploaded");
+
+        // Save files to wwwroot/uploads
+        var uploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        Directory.CreateDirectory(uploads);
+
+        //uri(s)
+        var imageUris = new List<string>();
+        foreach(var file in files)
+        {
+            var fileName = Guid.NewGuid() + ".jpg";
+            var filePath = Path.Combine(uploads, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            //get ngrok address
+            string grok = Env.GetString("GROK_API");
+            // Build a public URL for OpenAI
+       
+            Console.WriteLine("grock address:" + grok);
+            //var imageUrl = $"https://{Request.Host}/uploads/{fileName}"; //Changed to whatever URL is hitting the backend rather than
+            var imageUrl =$"{grok}/uploads/{fileName}";
+            Console.WriteLine("Final Image URL: " + imageUrl);
+            imageUris.Add(imageUrl);
+        }
+        //Being Hardcoded and messing up when URL changes 
+        //^^^ since using free version of ngrok may need to update each time^^^
+        /*
+            whenever start new session in command prompt: ngrok http *portnumber* for me 5000
+        */
+
+        //create receipt object
+        CreateReceiptDto Rec = new CreateReceiptDto();
+        Console.WriteLine("created receipt object");
+        Console.WriteLine("image url: " +imageUris[0]);
+        //put in store data
+        Rec.Store = await _ai.NameProcessImageUrlAsync(imageUris[0]);
+        Console.WriteLine("name has been processed");  
+        //get list of items from all photos
+        Console.WriteLine("make list of items");
+        var listOfItems = "";
+        foreach(var url in imageUris)
+        {
+            listOfItems+= await _ai.ProductProcessImageUrlAsync(url);
+        }
         Console.WriteLine("polulating items");
         Rec.Items = AiService.MakeList(listOfItems);
         Console.WriteLine("return receipt");

@@ -36,3 +36,12 @@ made changes to AiServices.cs to make Ai exports more consistent and to try and 
 
 4/28/26
 added ngok to env and changed url in photo processing
+
+4/29
+added CameraShow to scan page in import
+AI instructed to treat taxes as a product
+Need to make process receipt button send resent receipt created to create receipt page with info.
+    In take picture makes array of uri
+    send array of uri to create receipt page when "process receipt" button pressed
+    In create-receipt page 
+        import photo uri array

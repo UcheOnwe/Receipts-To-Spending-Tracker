@@ -96,7 +96,10 @@ public class AiService
 
                     Output:
                     Milk-2-3.50-
-                    Bread-1-2.00-";
+                    Bread-1-2.00-
+                    
+                    Include Taxes as if it was a product
+                    Do not include total";
         var message = ChatMessage.CreateUserMessage(
             new ChatMessageContentPart[]
             {

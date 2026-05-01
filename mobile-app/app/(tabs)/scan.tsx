@@ -9,7 +9,7 @@ import {useRouter} from 'expo-router';
   //to put a button in react antive
   import { Button, Alert, Pressable, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
   //from camera section
-  import {CameraType, CameraView, useCameraPermissions } from 'expo-camera';
+  import {CameraType, CameraView, useCameraPermissions, CameraMode } from 'expo-camera';
   import {useState, useRef } from 'react';
   import AntDesign from "@expo/vector-icons/AntDesign";
   import Feather from "@expo/vector-icons/Feather";
@@ -21,7 +21,7 @@ import {useRouter} from 'expo-router';
   //url api
   const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-  import Constants from "expo-constants";
+ // import Constants from "expo-constants";
 
 export default function Index() {
   
@@ -37,7 +37,7 @@ export default function Index() {
   const [mode, setMode] = useState<CameraMode>("picture");
   const [uri, setUri] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
-
+  const [photos, setPhotos] = useState<string[]>([]);            //used to build list oh photo uri
 
 
   function CameraViewComponent(){ 
@@ -56,7 +56,10 @@ export default function Index() {
             },
             {
               text: "Process Receipt",
-              onPress: ()=>router.push("/create-receipt"),
+              onPress: ()=>router.push({
+                pathname:"/create-receipt",
+              params: {photos: JSON.stringify(photos)}      //will send uri(s) to create-receipt page
+            }),
             }
           ]
         );
@@ -134,12 +137,17 @@ const uploadToBackend = async (uri: any) => {
 
  const takePicture = async () => {
     const photo = await ref.current?.takePictureAsync();
+    if(photo?.uri) {
+      setPhotos(prev => [...prev, photo.uri]);
+      setUri(photo.uri);
+    }                                               //Makes a list of uri
+    /*take and process one photo immediately 
     if (photo?.uri) {
       setUri(photo.uri);
       //send to backend to send to AI
       const aiResult = await uploadToBackend(photo.uri);
-      //setAiResponse(aiResult);
-    }
+      //setAiResponse(aiResult); 
+    }*/
   };
 
   const recordVideo = async () => {
@@ -374,7 +382,7 @@ Button: {
   top: 35,
     bottom: 35,
 },
- //Camera stuff
+/*  //Camera stuff
   cameraContainer: StyleSheet.absoluteFillObject,
   camera: StyleSheet.absoluteFillObject,
   shutterContainer: {
@@ -401,7 +409,7 @@ Button: {
     width: 70,
     height: 70,
     borderRadius: 50,
-  },
+  }, */
 
 
 });

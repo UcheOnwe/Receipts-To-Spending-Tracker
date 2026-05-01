@@ -1,9 +1,10 @@
 import {Text, View, StyleSheet, Button, ScrollView, Alert, TouchableOpacity, TextInput } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import api from '../Services/api'; // Our API service (Handles backend calls)
-import {useRouter} from 'expo-router'; //for navigation
+import {useRouter, useLocalSearchParams} from 'expo-router'; //for navigation
 
-
+//url api
+  const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 
 export default function CreateReceiptScreen(){
@@ -11,7 +12,25 @@ export default function CreateReceiptScreen(){
     //----------------------------------------------------
     //STATE - Variables that cause UI to update when changed
     //------------------------------------------------------
+    
+    //import uri(s) from scan page
+    const {photos} = useLocalSearchParams();
+    const photoList: string[] = JSON.parse(photos as string);
+    const [receipt,setReceipt] = useState(null);        //empty receipt object
 
+    //process photo(s) when getting to the page
+    useEffect(() => {
+        const process = async () =>{
+            const result = await uploadToBackend(photoList);
+            setReceipt(result);
+            setItems(result.items);
+
+            if(result.store){
+                setStore(result.store);
+            }
+        };
+        process();
+    }, []);
 
     //Basic Receipt info
     const [store, setStore] = useState('');    //store name
@@ -31,13 +50,54 @@ export default function CreateReceiptScreen(){
         };
 
     //List of all items added to this receipt
-    const [items, setItems] = useState<Item[]>([]);
+    const [items, setItems] = useState<Item[]>([]);         //even works for backend
 
     //Is the form currently submitting to backend?
     const [loading, setLoading] = useState(false);
 
     // For navigation between screens
     const router = useRouter();
+
+
+    //UPLOAD URI(S) TO BACKEND TO PROCESS
+        const uploadToBackend = async (uris: string[]) => {
+          console.log("Uploading image to backend...", uris);
+        
+          const formData = new FormData();
+        
+          uris.forEach((uri, index)=>{
+            formData.append("files", {
+                uri,
+                type:"image/jpeg",
+                name: `photo_${index}.jpeg`,
+            } as any);
+          });
+        
+          const response = await fetch(`${API_URL}/ai/imageName`, {
+            method: "POST",
+            headers:{
+              "Content-Type": "multipart/form-data",
+            },
+            body: formData,
+          });
+        
+          console.log("Response status:", response.status);
+        
+          if (!response.ok) {
+            throw new Error("Upload failed");
+          }
+        
+          const receipt = await response.json();
+        
+          console.log("Backend returned:", receipt);
+        
+          /* // OPTIONAL: save to DB
+          const save = await api.createReceipt(receipt);
+          console.log("receipt saved:", save); */
+        
+          return receipt; 
+         //return save;
+        };
 
 
     //Function: Add item to the items list
