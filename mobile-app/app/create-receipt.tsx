@@ -112,18 +112,18 @@ export default function CreateReceiptScreen(){
     //similar to: C# List.Add() but with React state
     function handleAddItem(){
         // Step 1: Validate - make sure all fields have data
-        if (itemName === " ")
+        if (itemName === "")
         {
             Alert.alert('Error', 'Please enter the item name');
             return;
         }
 
-        if (itemPrice === " "){
+        if (itemPrice === ""){
             Alert.alert('Error', 'Please enter item price');
             return;
         }
 
-        if (itemQuantity === " "){
+        if (itemQuantity === ""){
             Alert.alert('Error', 'Please enter item quantity');
             return;
         }
@@ -405,6 +405,7 @@ export default function CreateReceiptScreen(){
                         <Picker.Item label="Entertainment" value="Entertainment" />
                         <Picker.Item label="Shopping" value="Shopping" />
                         <Picker.Item label="Transportation" value="Transportation" />
+                        <Picker.Item label="Drink" value="Drink" />
                         <Picker.Item label="Other" value="Other" />
                     </Picker>
                 </View>
