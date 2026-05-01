@@ -52,7 +52,11 @@ export default function Index() {
             {
               text:"Exit Camera",
               style:"cancel",
-              onPress:() => setShowCamera(false),
+              onPress:() => {
+                setPhotos([]);    //clears photo
+                setUri(null);     //clears uri
+                setShowCamera(false);     //closes camera
+              },
             },
             {
               text: "Process Receipt",
