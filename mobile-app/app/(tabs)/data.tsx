@@ -4,9 +4,10 @@ import { BarChart, PieChart } from "react-native-gifted-charts";
 
 const logo = require('@/assets/images/icon.png');
 
+
 //pie stuff
 const RandColor = () => {
-  return '#' + Math.floor(Math.random()*16777215).toString(16);
+  return '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
 };
 
 const piedata = [15, 30, 26, 40];
@@ -138,6 +139,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
+    width: 'auto',
+    height: 'auto',
     backgroundColor: '#fdfdfd',
     position: 'relative',
     top: 25,

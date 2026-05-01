@@ -250,11 +250,7 @@ if (showCamera) {
           <Text style={styles.ButtonText}>Take a Photo</Text>
           <Image style={styles.buttonLogoCam} source={require('@/assets/images/Camera.png')}/>
          </TouchableOpacity>
-        <Text style={styles.Or}>Or</Text>
-        < TouchableOpacity style={styles.Button}>
-          <Text style={styles.ButtonText}>Upload From Gallery</Text>
-          <Image style={styles.buttonLogoImg} source={require('@/assets/images/picture.png')}/>
-         </TouchableOpacity>
+        
       </View>
     </View>
     
@@ -267,7 +263,7 @@ const styles = StyleSheet.create({
   containerT: {
     backgroundColor: '#fdfdfd',
     position: 'relative',
-    height: 1000,
+     flexGrow: 1, paddingBottom:100,
     margin: 0,
     padding: 0,
   },
@@ -282,6 +278,8 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: '#fdfdfd',
+    width: 'auto',
+    height: 'auto',
     position: 'relative',
     top: 25,
     left: 5,
@@ -336,22 +334,14 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
 
-  // componet specific styles
-Or: {
-    color: '#000000',
-    fontFamily: 'Cochin',
-    fontSize: 30,
-    textAlign: 'center',
-    top: 35,
-    bottom: 35,
-  },
-
+  
   ButtonText: {
     color: '#242424',
     fontFamily: 'Cochin',
     fontSize: 30,
     textAlign: 'center',
     alignSelf: 'center',
+     position: 'absolute',
     verticalAlign: 'middle',
     bottom: 15,
     width: 200,
@@ -373,10 +363,10 @@ Or: {
   },
 
 Button: {
-  backgroundColor: '#9b9b9b',
+  backgroundColor: '#cacaca',
  alignSelf: 'center',
  verticalAlign: 'middle',
-  color: '#5c5c5c',
+  color: '#969696',
   width: 300,
   height: 220,
   top: 35,
