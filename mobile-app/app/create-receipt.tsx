@@ -17,11 +17,15 @@ export default function CreateReceiptScreen(){
     
     //import uri(s) from scan page
     const {photos} = useLocalSearchParams();
-    const photoList: string[] = JSON.parse(photos as string);
+    const photoList: string[] = photos ? JSON.parse(photos as string) : [];
     const [receipt,setReceipt] = useState(null);        //empty receipt object
 
     //process photo(s) when getting to the page
     useEffect(() => {
+        if(photoList.length === 0){
+            console.log("No photos provided");
+            return;                                 //skip loading photo to AI if manually entering information
+        }
         const process = async () =>{
             const result = await uploadToBackend(photoList);
             setReceipt(result);
@@ -419,6 +423,9 @@ export default function CreateReceiptScreen(){
                     disabled={loading}
                 />
             </View>
+            <View  style={styles.section}>
+              <Text style={styles.textbuffor}>t.</Text>
+            </View>
 
         </ScrollView>
     );
@@ -520,5 +527,9 @@ const styles = StyleSheet.create({
         textAlign: 'right',
         marginTop: 10,
         color: '#2ecc71'
-    }
-});
+    },
+    textbuffor: {
+    color: '#f5f5f5',
+    fontFamily: 'Inter',
+    fontSize: 60,
+}});
