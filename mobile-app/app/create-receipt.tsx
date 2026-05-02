@@ -148,7 +148,7 @@ export default function CreateReceiptScreen(){
         }
     
 
-        if(date == ''){
+        if(!date){
             Alert.alert('Error', 'Please enter date');
             return;
         }

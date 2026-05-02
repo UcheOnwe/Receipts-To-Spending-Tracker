@@ -80,7 +80,7 @@ public class AiController : ControllerBase
 
     //save image to pass as url
      
-    [HttpPost("image")]
+    /*[HttpPost("image")]
     public async Task<IActionResult> ProcessImage(IFormFile file)
     {
         if (file == null || file.Length == 0)
@@ -121,9 +121,9 @@ public class AiController : ControllerBase
 
         Console.WriteLine("Final Image URL: " + imageUrl);
         
-        /*
-            whenever start new session in command prompt: ngrok http *portnumber* for me 5000
-        */
+        
+           // whenever start new session in command prompt: ngrok http *portnumber* for me 5000
+        
 
         //create receipt object
         CreateReceiptDto Rec = new CreateReceiptDto();
@@ -163,12 +163,83 @@ public class AiController : ControllerBase
         Do not need to create object need to impout data into reciept objects
         need to look up how to import other functions from other C# files
         
-        */
+        
 
         //return Ok(new { response = result });
+    }*/
+
+    //trying endpoint with base64
+    [HttpPost("imageName")]
+    public async Task<IActionResult> ProcessImageName(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest("No file uploaded");
+
+        try
+        {
+            // ============================================
+            // STEP 1: Read image file into memory
+            // WHY: We need the raw bytes to convert to base64
+            // ============================================
+            byte[] imageBytes;
+            using (var memoryStream = new MemoryStream())
+            {
+                await file.CopyToAsync(memoryStream);
+                imageBytes = memoryStream.ToArray();
+            }
+
+            // ============================================
+            // STEP 2: Convert bytes to base64 string
+            // WHY: OpenAI accepts base64 encoded images
+            // NO PUBLIC URL NEEDED!
+            // ============================================
+            string base64Image = Convert.ToBase64String(imageBytes);
+
+            Console.WriteLine("Image converted to base64");
+            Console.WriteLine($"Base64 length: {base64Image.Length} characters");
+
+            // ============================================
+            // STEP 3: Create receipt object
+            // ============================================
+            CreateReceiptDto Rec = new CreateReceiptDto();
+            Console.WriteLine("Created receipt object");
+
+            // ============================================
+            // STEP 4: Send base64 to OpenAI to get store name
+            // WHY: Using new base64 method instead of URL method
+            // ============================================
+            Rec.Store = await _ai.NameProcessImageBase64Async(base64Image);
+            Console.WriteLine("Store name extracted: " + Rec.Store);
+
+            // ============================================
+            // STEP 5: Get list of items from OpenAI
+            // WHY: Using base64 method - consistent approach
+            // ============================================
+            Console.WriteLine("Extracting items...");
+            var listOfItems = await _ai.ProductProcessImageBase64Async(base64Image);
+            Console.WriteLine("Items extracted");
+
+            // ============================================
+            // STEP 6: Parse items into receipt
+            // ============================================
+            Console.WriteLine("Parsing items...");
+            Rec.Items = AiService.MakeList(listOfItems);
+            Console.WriteLine($"Parsed {Rec.Items.Count} items");
+
+            // ============================================
+            // STEP 7: Return receipt object to frontend
+            // ============================================
+            return Ok(Rec);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("ERROR: " + ex.Message);
+            Console.WriteLine("Stack trace: " + ex.StackTrace);
+            return StatusCode(500, new { error = ex.Message });
+        }
     }
 
-    [HttpPost("imageName")]
+    /*[HttpPost("imageName")]
     public async Task<IActionResult> ProcessImageName(IFormFile file)
     {
         if (file == null || file.Length == 0)
@@ -196,9 +267,9 @@ public class AiController : ControllerBase
        
         //Being Hardcoded and messing up when URL changes 
         //^^^ since using free version of ngrok may need to update each time^^^
-        /*
-            whenever start new session in command prompt: ngrok http *portnumber* for me 5000
-        */
+        
+            //whenever start new session in command prompt: ngrok http *portnumber* for me 5000
+        
 
         //create receipt object
         CreateReceiptDto Rec = new CreateReceiptDto();
@@ -215,5 +286,5 @@ public class AiController : ControllerBase
         Console.WriteLine("return receipt");
         return Ok(Rec);
        
-    }
+    }*/
 }

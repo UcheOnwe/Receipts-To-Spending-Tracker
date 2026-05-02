@@ -115,9 +115,64 @@ export default function TabTwoScreen() {
       </View>
     );
   }
+  
+  //Trying image upload with base64
+  const uploadToBackend = async (uri: any) => {
+  console.log("Uploading image to backend...", uri);
+
+  // STEP 1: Create FormData with image
+  // WHY: This is how we send files in HTTP requests
+  const formData = new FormData();
+
+  formData.append("file", {
+    uri,
+    type: "image/jpeg",
+    name: "photo.jpg",
+  } as any);
+
+  try
+  {
+    // STEP 2: Send to backend
+    // WHY: Using environment variable for URL (works on all machines)
+    const response = await fetch(`${API_URL}/ai/imageName`, {
+      method: "POST",
+      headers: {
+        // DO NOT SET Content-Type for FormData!
+        // React Native sets it automatically with boundary
+      },
+      body: formData,
+    });
+
+    console.log("Response status:", response.status);
+
+    // STEP 3: Check if successful
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log("Error response:", errorText);
+      throw new Error("Upload failed: " + errorText);
+    }
+
+    // STEP 4: Parse receipt data from backend
+    // Backend already processed with OpenAI and returns receipt
+    const receipt = await response.json();
+    console.log("Backend returned receipt:", receipt);
+
+    // STEP 5: Save to database
+    const saved = await api.createReceipt(receipt);
+    console.log("Receipt saved to database:", saved);
+
+    return saved;
+  }
+  catch (error: any)
+  {
+    console.error("Upload error:", error);
+    Alert.alert("Error", "Failed to process image: " + error.message);
+    throw error;
+  }
+};
 
   //to send photo uri to backend
-const uploadToBackend = async (uri: any) => {
+/*const uploadToBackend = async (uri: any) => {
   console.log("Uploading image to backend...", uri);
 
   const formData = new FormData();
@@ -152,7 +207,7 @@ const uploadToBackend = async (uri: any) => {
 
  // return receipt; 
  return save;
-};
+};*/
 
  const takePicture = async () => {
     const photo = await ref.current?.takePictureAsync();

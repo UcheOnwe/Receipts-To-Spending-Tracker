@@ -47,8 +47,7 @@ public class AiService
     }
 
     //image processing
-
-     public async Task<string> ProcessImageUrlAsync(string imageUrl)
+    public async Task<string> ProcessImageUrlAsync(string imageUrl)
     {
         var message = ChatMessage.CreateUserMessage(
             new ChatMessageContentPart[]
@@ -64,6 +63,68 @@ public class AiService
         return result.Value.Content[0].Text;
     }
 
+    //Trying Base64
+    public async Task<string> NameProcessImageBase64Async(string base64Image)
+    {
+        // Create message with base64 image
+        var message = ChatMessage.CreateUserMessage(
+            new ChatMessageContentPart[]
+            {
+                ChatMessageContentPart.CreateTextPart(
+                    "Please return store name only, Example: Walmart. If Unable return: No name found"),
+                // Use base64 image data directly
+                ChatMessageContentPart.CreateImagePart(
+                    BinaryData.FromBytes(Convert.FromBase64String(base64Image)),
+                    "image/jpeg"
+                )
+            }
+        );
+
+        var result = await _chat.CompleteChatAsync(new[] { message });
+        return result.Value.Content[0].Text;
+    }
+    // ============================================
+    // NEW METHOD - Get items with Base64
+    // WHY: Same reason - avoid ngrok URL issues
+    // ============================================
+    public async Task<string> ProductProcessImageBase64Async(string base64Image)
+    {
+        var prompt = @"
+                    You are extracting structured data from a receipt.
+
+                    Output format:
+                    name-quantity-price-
+
+                    Example:
+                    Input:
+                    Milk 2 $3.50
+                    Bread $2.00
+
+                    Output:
+                    Milk-2-3.50-
+                    Bread-1-2.00-";
+                    
+        var message = ChatMessage.CreateUserMessage(
+            new ChatMessageContentPart[]
+            {
+                ChatMessageContentPart.CreateTextPart(prompt),
+                // Use base64 image data directly
+                ChatMessageContentPart.CreateImagePart(
+                    BinaryData.FromBytes(Convert.FromBase64String(base64Image)),
+                    "image/jpeg"
+                )
+            }
+        );
+
+        var result = await _chat.CompleteChatAsync(new[] { message });
+        return result.Value.Content[0].Text;
+    }
+
+    
+
+    
+
+    /*
     public async Task<string> NameProcessImageUrlAsync(string imageUrl)
     {
         var message = ChatMessage.CreateUserMessage(
@@ -109,7 +170,7 @@ public class AiService
 
         
         return result.Value.Content[0].Text;
-    }
+    }*/
 
     //go through list of items returned by the AI and make a new item object to populate reciept
     public static List<CreateReceiptItemDto> MakeList(string products)
