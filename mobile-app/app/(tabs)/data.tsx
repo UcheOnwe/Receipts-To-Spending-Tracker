@@ -1,6 +1,17 @@
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback, useMemo, useState } from 'react';
+
+import api from '@/Services/api'; // Our API service (Handles backend calls)
+
+
 import { Image } from 'expo-image';
 import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BarChart, PieChart } from "react-native-gifted-charts";
+
+
+import type { ReceiptDto } from '@/assets/Utilities/receipt';
+import { formatUsd } from '@/assets/Utilities/formatReceipt';
+import { buildStoreShares,buildDailySpending } from '@/assets/Utilities/spending';
 
 const logo = require('@/assets/images/icon.png');
 
@@ -9,22 +20,10 @@ const RandColor = () => {
   return '#' + Math.floor(Math.random()*16777215).toString(16);
 };
 
-const piedata = [15, 30, 26, 40];
-const pieData = piedata.map(value => ({
-  value,
-  color: RandColor(),}));
+
+
 const dataL = [{id: '1' , name: 'Walmart', value: 15}, {id: '2' , name: 'Target',value: 30}, {id: '3' , name: 'Heb',value: 26}, {id: '4' , name: 'Walgreens',value: 40}];
 //bar graph stuff
-
-const barData = [
-        {value: 25.0, label: 'M'},
-        {value: 50.0, label: 'T'},
-        {value: 74.5, label: 'W'},
-        {value: 32.0, label: 'T'},
-        {value: 60.0, label: 'F'},
-        {value: 25.6, label: 'S'},
-        {value: 30.0, label: 'S'},
-    ];
 
     //Advice stuff
 
@@ -34,7 +33,81 @@ const barData = [
 
 export default function ReceiptListScreen()
 {
-  
+
+  const piePalette = ['#ffd900', '#ff0000', '#00ff0d', '#0044ff', '#7700ff','#ffae00', '#ff00f2', '#00ccff', '#1b0091', '#39007a'];
+
+  const [receipts, setReceipts] = useState<ReceiptDto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await Promise.race([
+        api.getReceipts(),
+        new Promise<ReceiptDto[]>((_, reject) => {
+          setTimeout(() => reject(new Error('Request timed out. Please try again.')), 10000);
+        }),
+      ]);
+      setReceipts(data);
+    } catch (e) {
+      setReceipts([]);
+      setError(e instanceof Error ? e.message : 'Could not load spending data.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      void load();
+    }, [load]),
+  );
+
+  const daily = useMemo(() => buildDailySpending(receipts, 7), [receipts]);
+  const chartData = useMemo(
+    () =>
+      daily.map((day) => ({
+        value: day.total,
+        label: day.isoDate,
+        topLabelComponent: () => (
+        <Text style={{color: '#26a100', fontSize: 18, marginBottom: 6}}>$ {day.total}</Text>
+      ),
+        frontColor: '#35e200',
+      })),
+    [daily],
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      void load();
+    }, [load]),
+  );
+
+  const shares = useMemo(() => buildStoreShares(receipts, 7), [receipts]);
+  const pieData = useMemo(
+    () =>
+      shares.map((row, idx) => ({
+        value: row.percentage,
+        color: piePalette[idx % piePalette.length],
+      })),
+    [shares],
+  );
+
+  const pieDataList = useMemo(
+    () =>
+      shares.map((row, idx) => ({
+        store: row.store,
+        value: row.amount,
+        percentage: row.percentage,
+        color: piePalette[idx % piePalette.length],
+      })),
+    [shares],
+  );
+
+
+
   return (
     <ScrollView style={styles.Scroll}>
 
@@ -58,11 +131,12 @@ export default function ReceiptListScreen()
         <Text style={styles.textH}>Spending per day</Text>
        
          <View  style={styles.containerB}><BarChart
-                barWidth={52}
+                barWidth={60}
                 barBorderRadius={4}
                 frontColor="green"
-                data={barData}
+                data={chartData}
                 yAxisThickness={0}
+                spacing={60}
                 xAxisThickness={0}
             /></View>
         
@@ -78,13 +152,22 @@ export default function ReceiptListScreen()
       </View>
       <View style={styles.containerL}>
         <FlatList
-        data = {dataL}
+        data = {pieDataList}
         scrollEnabled={false}
         contentContainerStyle={{ gap: 20 }}
-        renderItem={({item}) => 
-        <Text style={styles.textL}>{item.name}: {item.value}%</Text> 
+        renderItem={({item}) => <View >
+          <View style = {{
+            backgroundColor: item.color,
+    position: 'relative',
+    height: 12,
+    width: 12,
+    right: 0,
+          }}></View>
+        <Text style={styles.textL}>{item.store}: {item.percentage}%</Text> 
+        </View>
+        
       }
-        keyExtractor={(item) => item.id}
+        
         ListEmptyComponent={
                           <Text style={styles.textL}>No Money spent</Text>}
         />
@@ -138,6 +221,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
+    
     backgroundColor: '#fdfdfd',
     position: 'relative',
     top: 25,
@@ -217,6 +301,7 @@ textLableT: {
   },
   textL: {
     color: '#000000',
+    alignItems: 'center',
     fontFamily: 'Kameron',
     fontSize: 20,
     top: 0,
@@ -227,6 +312,7 @@ containerB: {
     backgroundColor: '#fdfdfd',
     position: 'relative',
     top: 0,
+    height: 'auto',
     bottom: 35,
     left: 5,
     margin: 0,

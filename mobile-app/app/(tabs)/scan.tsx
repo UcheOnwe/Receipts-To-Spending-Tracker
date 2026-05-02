@@ -9,7 +9,7 @@ import {useRouter} from 'expo-router';
   //to put a button in react antive
   import { Button, Alert, Pressable, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
   //from camera section
-  import {CameraType, CameraView, useCameraPermissions } from 'expo-camera';
+  import {CameraType, CameraView, useCameraPermissions, CameraMode } from 'expo-camera';
   import {useState, useRef } from 'react';
   import AntDesign from "@expo/vector-icons/AntDesign";
   import Feather from "@expo/vector-icons/Feather";
@@ -21,7 +21,7 @@ import {useRouter} from 'expo-router';
   //url api
   const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-  import Constants from "expo-constants";
+ // import Constants from "expo-constants";
 
 export default function Index() {
   
@@ -37,7 +37,7 @@ export default function Index() {
   const [mode, setMode] = useState<CameraMode>("picture");
   const [uri, setUri] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
-
+  const [photos, setPhotos] = useState<string[]>([]);            //used to build list oh photo uri
 
 
   function CameraViewComponent(){ 
@@ -56,7 +56,10 @@ export default function Index() {
             },
             {
               text: "Process Receipt",
-              onPress: ()=>router.push("/create-receipt"),
+              onPress: ()=>router.push({
+                pathname:"/create-receipt",
+              params: {photos: JSON.stringify(photos)}      //will send uri(s) to create-receipt page
+            }),
             }
           ]
         );
@@ -134,12 +137,17 @@ const uploadToBackend = async (uri: any) => {
 
  const takePicture = async () => {
     const photo = await ref.current?.takePictureAsync();
+    if(photo?.uri) {
+      setPhotos(prev => [...prev, photo.uri]);
+      setUri(photo.uri);
+    }                                               //Makes a list of uri
+    /*take and process one photo immediately 
     if (photo?.uri) {
       setUri(photo.uri);
       //send to backend to send to AI
       const aiResult = await uploadToBackend(photo.uri);
-      //setAiResponse(aiResult);
-    }
+      //setAiResponse(aiResult); 
+    }*/
   };
 
   const recordVideo = async () => {
@@ -242,11 +250,7 @@ if (showCamera) {
           <Text style={styles.ButtonText}>Take a Photo</Text>
           <Image style={styles.buttonLogoCam} source={require('@/assets/images/Camera.png')}/>
          </TouchableOpacity>
-        <Text style={styles.Or}>Or</Text>
-        < TouchableOpacity style={styles.Button}>
-          <Text style={styles.ButtonText}>Upload From Gallery</Text>
-          <Image style={styles.buttonLogoImg} source={require('@/assets/images/picture.png')}/>
-         </TouchableOpacity>
+        
       </View>
     </View>
     
@@ -259,7 +263,7 @@ const styles = StyleSheet.create({
   containerT: {
     backgroundColor: '#fdfdfd',
     position: 'relative',
-    height: 1000,
+     flexGrow: 1, paddingBottom:100,
     margin: 0,
     padding: 0,
   },
@@ -274,6 +278,8 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: '#fdfdfd',
+    width: 'auto',
+    height: 'auto',
     position: 'relative',
     top: 25,
     left: 5,
@@ -328,22 +334,14 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
 
-  // componet specific styles
-Or: {
-    color: '#000000',
-    fontFamily: 'Cochin',
-    fontSize: 30,
-    textAlign: 'center',
-    top: 35,
-    bottom: 35,
-  },
-
+  
   ButtonText: {
     color: '#242424',
     fontFamily: 'Cochin',
     fontSize: 30,
     textAlign: 'center',
     alignSelf: 'center',
+     position: 'absolute',
     verticalAlign: 'middle',
     bottom: 15,
     width: 200,
@@ -365,16 +363,22 @@ Or: {
   },
 
 Button: {
-  backgroundColor: '#9b9b9b',
+  backgroundColor: '#cecece',
  alignSelf: 'center',
  verticalAlign: 'middle',
-  color: '#5c5c5c',
+  color: '#969696',
+  borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
   width: 300,
   height: 220,
   top: 35,
     bottom: 35,
 },
- //Camera stuff
+/*  //Camera stuff
   cameraContainer: StyleSheet.absoluteFillObject,
   camera: StyleSheet.absoluteFillObject,
   shutterContainer: {
@@ -401,7 +405,7 @@ Button: {
     width: 70,
     height: 70,
     borderRadius: 50,
-  },
+  }, */
 
 
 });

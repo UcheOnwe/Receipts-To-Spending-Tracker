@@ -172,15 +172,15 @@ public class AiController : ControllerBase
     [HttpPost("imageName")]
     public async Task<IActionResult> ProcessImageName(IFormFile file)
     {
-        if (file == null || file.Length == 0)
-            return BadRequest("No file uploaded");
-
+        if (file == null || f
         try
         {
             // ============================================
             // STEP 1: Read image file into memory
             // WHY: We need the raw bytes to convert to base64
-            // ============================================
+            // ==========================================ile.Length == 0)
+            return BadRequest("No file uploaded");
+==
             byte[] imageBytes;
             using (var memoryStream = new MemoryStream())
             {

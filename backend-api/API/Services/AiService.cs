@@ -145,19 +145,37 @@ public class AiService
     public async Task<string> ProductProcessImageUrlAsync(string imageUrl)
     {
         var prompt = @"
-                    You are extracting structured data from a receipt.
+                You are extracting structured data from a receipt.
 
-                    Output format:
-                    name-quantity-price-
+                Each item must include a category chosen ONLY from this list:
+                [Food & Dining, Groceries, Entertainment, Shopping, Transportation, Drink, Other]
 
-                    Example:
-                    Input:
-                    Milk 2 $3.50
-                    Bread $2.00
+                Output format:
+                name-quantity-price-category-
 
-                    Output:
-                    Milk-2-3.50-
-                    Bread-1-2.00-";
+                Rules:
+                - If quantity is not specified, default to 1
+                - Price should be a number without currency symbols
+                - Include Taxes as if it was a product
+                - Do not include total
+                - Category must exactly match one of the provided options
+                -Do not include subtotals
+                -Do not return any other text
+
+                Example:
+
+                Input:
+                Milk 2 $3.50
+                Bread $2.00
+                Movie Ticket $12.00
+                Tax $1.20
+
+                Output:
+                Milk-2-3.50-Groceries-
+                Bread-1-2.00-Groceries-
+                Movie Ticket-1-12.00-Entertainment-
+                Tax-1-1.20-Other-
+                ";
         var message = ChatMessage.CreateUserMessage(
             new ChatMessageContentPart[]
             {
@@ -175,15 +193,16 @@ public class AiService
     //go through list of items returned by the AI and make a new item object to populate reciept
     public static List<CreateReceiptItemDto> MakeList(string products)
     {
-        int count =0; //counter to decide if product quantity or price
+        int count =0; //counter to decide if product, quantity, price, or catagory
 		int start = 0;
         string name = "";
         Decimal price = 0.0M;
-        int quantity = 1;                                               //convert to decimal
+        int quantity = 1;  //convert to decimal
+        string category ="";                                             
         List<CreateReceiptItemDto> things = new List<CreateReceiptItemDto>(); 
 		for(int x=0;x<products.Length;x++)
 		{	
-            int option = count%3;
+            int option = count%4;
            
 			if(products[x] == '-')
 			{				
@@ -202,63 +221,78 @@ public class AiService
                         start = x+1;
                         break;
 
-				case(1): //quantity
-					string q =""; //need to get string before casting it to decimal 
-					int quant =0;		//need to change quantity to decimal in case of weight quantity
-					for(int i = start; i<x;i++)
-						{
-							q = q+products[i];
-						}
-                    string tempQ="";
-                    for(int i = 0; i<q.Length;i++)
-                        {
-                            if(char.IsNumber(q[i]))
+                    case(1): //quantity
+                        string q =""; //need to get string before casting it to decimal 
+                        int quant =0;		//need to change quantity to decimal in case of weight quantity
+                        for(int i = start; i<x;i++)
                             {
-                                tempQ +=q[i];
+                                q = q+products[i];
                             }
-                        }    
-					quant = Convert.ToInt32(tempQ);		//cast string to decimal
-                    quantity = quant;
-					count++;
-					start = x+1;
-					break;
+                        string tempQ="";
+                        for(int i = 0; i<q.Length;i++)
+                            {
+                                if(char.IsNumber(q[i]))
+                                {
+                                    tempQ +=q[i];
+                                }
+                            }    
+                        quant = Convert.ToInt32(tempQ);		//cast string to decimal
+                        quantity = quant;
+                        count++;
+                        start = x+1;
+                        break;
 
-				case(2): //price 
-					string p ="";		//string to get price
-					decimal pr =0.0M;
-					for(int i = start; i<x;i++)
-						{
-							p = p + products[i];
-						}
-                    string tempP="";
-                    
-                    foreach(char c in p)
-                        {
-                            if(char.IsDigit(c) || c == '.')
+                    case(2): //price 
+                        string p ="";		//string to get price
+                        decimal pr =0.0M;
+                        for(int i = start; i<x;i++)
                             {
-                                tempP+=c;
+                                p = p + products[i];
                             }
+                        string tempP="";
+                        
+                        foreach(char ch in p)
+                            {
+                                if(char.IsDigit(ch) || ch == '.')
+                                {
+                                    tempP+=ch;
+                                }
+                            }
+                        
+                        pr = Convert.ToDecimal(p);
+                        price = pr;
+                        
+                        
+
+                        count++;
+                        start = x+1;
+                        break;
+                    case(3):
+                        string c ="";       //string to get category
+                        for(int i = start;i<x;i++)
+                        {
+                            c = c + products[i];
                         }
-                      
-					pr = Convert.ToDecimal(p);
-                    price = pr;
-					
-                    //populate 1 item
-                    CreateReceiptItemDto item = new CreateReceiptItemDto();
-                    item.ItemName = name;
-                    item.Quantity = quantity;
-                    item.Price = price;
-                    things.Add(item);
+                        category = c;
 
-                    //reset values
-                    name = "";
-                    price = 0.0M;
-                    quantity = 1;
+                        //populate 1 item
+                        CreateReceiptItemDto item = new CreateReceiptItemDto();
+                        item.ItemName = name;
+                        item.Quantity = quantity;
+                        item.Price = price;
+                        item.Category = category;
+                        things.Add(item);
 
-                    count++;
-					start = x+1;
-					break;
-                }
+                        //reset values
+                        name = "";
+                        price = 0.0M;
+                        quantity = 1;
+                        category ="";
+
+                        count++;
+                        start = x+1;
+                        break;
+                    }
 					
 			}
 		}
