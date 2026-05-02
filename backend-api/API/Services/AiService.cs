@@ -259,7 +259,16 @@ public class AiService
                                 }
                             }
                         
-                        pr = Convert.ToDecimal(p);
+                        if (string.IsNullOrWhiteSpace(tempP))
+                        {
+                            continue;
+                        }
+                        //pr = Convert.ToDecimal(p);
+                        if(!decimal.TryParse(tempP, out pr))
+                        {
+                            Console.WriteLine($"Skipping invalid value: {p}, cleaned={tempP}");
+                            continue;
+                        }
                         price = pr;
                         
                         

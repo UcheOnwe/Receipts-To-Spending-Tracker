@@ -194,6 +194,8 @@ public class AiController : ControllerBase
             // NO PUBLIC URL NEEDED!
             // ============================================
             string base64Image = Convert.ToBase64String(imageBytes);
+            Console.WriteLine($"NEW REQUEST --- {DateTime.Now}");
+            Console.WriteLine($"Base64 preview: {base64Image.Substring(0, 50)}");
 
             Console.WriteLine("Image converted to base64");
             Console.WriteLine($"Base64 length: {base64Image.Length} characters");
@@ -217,7 +219,7 @@ public class AiController : ControllerBase
             // ============================================
             Console.WriteLine("Extracting items...");
             var listOfItems = await _ai.ProductProcessImageBase64Async(base64Image);
-            Console.WriteLine("Items extracted");
+            Console.WriteLine("NEW ITEMS RESPONSE RECEIVED");
 
             // ============================================
             // STEP 6: Parse items into receipt
