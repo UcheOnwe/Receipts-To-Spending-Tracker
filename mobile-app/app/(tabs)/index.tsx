@@ -99,7 +99,7 @@ console.log('public expo',BASE_URL);
   }
 
   //handles displaying receipt details
-  function handleReceiptPress(receiptId){
+  function handleReceiptPress(receiptId: number){
         // Navigate to receipt details screen with the ID
         router.push(`/receipt/${receiptId}`);
   }

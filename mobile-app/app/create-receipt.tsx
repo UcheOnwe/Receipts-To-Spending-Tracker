@@ -74,7 +74,7 @@ export default function CreateReceiptScreen(){
           const formData = new FormData();
         
           uris.forEach((uri, index)=>{
-            formData.append("files", {
+            formData.append("file", {
                 uri,
                 type:"image/jpeg",
                 name: `photo_${index}.jpeg`,
@@ -83,9 +83,6 @@ export default function CreateReceiptScreen(){
         
           const response = await fetch(`${API_URL}/ai/imageName`, {
             method: "POST",
-            headers:{
-              "Content-Type": "multipart/form-data",
-            },
             body: formData,
           });
         
