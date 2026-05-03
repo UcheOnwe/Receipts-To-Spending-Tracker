@@ -118,7 +118,7 @@ export default function ReceiptListScreen()
         value: day.total,
         label: day.isoDate,
         topLabelComponent: () => (
-        <Text style={{color: '#26a100', fontSize: 18, marginBottom: 6}}>$ {day.total}</Text>
+        <Text style={{color: '#26a100', fontSize: 14, marginBottom: 6}}>$ {day.total}</Text>
       ),
         frontColor: '#35e200',
       })),
@@ -168,7 +168,7 @@ export default function ReceiptListScreen()
       <View  style={styles.containerH}>
         <Text style={styles.textH}>Spending Advice</Text>
         <View>
-        <Text style={styles.textD}>{aiResponse || "Loading..."}</Text>
+        <Text style={styles.textD}>{"\t\t\t\t\t"}{aiResponse.substring(17).split("\"\n}")[0] || "Loading..."}</Text>
         </View>
       </View>
 
@@ -178,13 +178,14 @@ export default function ReceiptListScreen()
         <Text style={styles.textH}>Spending per day</Text>
        
          <View  style={styles.containerB}><BarChart
-                barWidth={60}
+                barWidth={80}
                 barBorderRadius={4}
                 frontColor="green"
                 data={chartData}
                 yAxisThickness={0}
-                spacing={60}
+                spacing={20}
                 xAxisThickness={0}
+                yAxisExtraHeight={40}
             /></View>
         
         
@@ -381,6 +382,7 @@ textD: {
     color: '#000000',
     fontFamily: 'Inter',
     fontSize: 20,
+    marginInlineStart: 6
     
   },
 textbuffor: {
