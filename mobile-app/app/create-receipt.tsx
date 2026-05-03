@@ -14,7 +14,19 @@ export default function CreateReceiptScreen(){
     //----------------------------------------------------
     //STATE - Variables that cause UI to update when changed
     //------------------------------------------------------
+
+    const CATEGORY_OPTIONS = [
+        "Food & Dining",
+        "Groceries",
+        "Entertainment",
+        "Shopping",
+        "Transportation",
+        "Drink",
+        "Other"
+    ];
     
+    //Editing state
+    const [editingIndex, setEditingIndex] = useState(null);
     //import uri(s) from scan page
     const {photos} = useLocalSearchParams();
     const photoList: string[] = photos ? JSON.parse(photos as string) : [];
@@ -259,6 +271,23 @@ export default function CreateReceiptScreen(){
         }
     }
 
+    //Update Item
+    function updateItem(index: number, field: keyof Item, value: string){
+        const updatedItems = [...items]; // copy list
+        // convert numbers properly
+        if (field === "price") {
+            updatedItems[index][field] = parseFloat(value) || 0;
+        } 
+        else if (field === "quantity") {
+            updatedItems[index][field] = parseInt(value) || 1;
+        } 
+        else {
+            updatedItems[index][field] = value;
+        }
+
+        setItems(updatedItems);
+    }
+
 
     //Function: Render list of added items
     //returns JSX to display all items
@@ -282,11 +311,75 @@ export default function CreateReceiptScreen(){
             const itemElement = (
                 <View key = {i} style = {styles.itemCard}>
                     <View style = {styles.itemInfo}>
-                        <Text style={styles.itemName}>{currentItem.itemName}</Text>
-                        <Text style={styles.itemDetails}>
+                        {editingIndex === i ? (
+                        <>
+                            <TextInput
+                            style={styles.input}
+                            value={currentItem.itemName}
+                            onChangeText={(text) => updateItem(i, "itemName", text)}
+                            keyboardType="default" 
+                            placeholder="Item name"
+                            placeholderTextColor="#332727"
+                            />
+
+                            <TextInput
+                            style={styles.input}
+                            value={currentItem.price.toString()}
+                            onChangeText={(text) => updateItem(i, "price", text)}
+                            keyboardType="decimal-pad"
+                            placeholder="Price (e.g. 3.99)"
+                            placeholderTextColor="#332727"
+                            />
+
+                            <TextInput
+                            style={styles.input}
+                            value={currentItem.quantity.toString()}
+                            onChangeText={(text) => updateItem(i, "quantity", text)}
+                            keyboardType="number-pad"
+                            placeholder="Quantity"
+                            placeholderTextColor="#332727"
+                            />
+
+                            <View style={styles.pickerContainer}>
+                                <Picker
+                                    selectedValue={
+                                        CATEGORY_OPTIONS.includes(currentItem.category)
+                                        ?currentItem.category
+                                        :"Other"
+                                    }
+                                    onValueChange={(value) => updateItem(i, "category", value)}
+                                >
+                                    <Picker.Item label="Food & Dining" value="Food & Dining" />
+                                    <Picker.Item label="Groceries" value="Groceries" />
+                                    <Picker.Item label="Entertainment" value="Entertainment" />
+                                    <Picker.Item label="Shopping" value="Shopping" />
+                                    <Picker.Item label="Transportation" value="Transportation" />
+                                    <Picker.Item label="Drink" value="Drink" />
+                                    <Picker.Item label="Other" value="Other" />
+                                </Picker>
+                            </View>
+
+                            <TouchableOpacity onPress={() => setEditingIndex(null)}>
+                            <Text style={{ color: "green" }}>Save</Text>
+                            </TouchableOpacity>
+                            </>
+                            ) : (
+                            <>
+                            <Text style={styles.itemName}>{currentItem.itemName}</Text>
+
+                            <Text style={styles.itemDetails}>
                             ${priceFormatted} * {currentItem.quantity} = ${itemTotalFormatted}
-                        </Text>
-                        <Text style={styles.itemCategory}>{currentItem.category}</Text>
+                            </Text>
+
+                            <Text style={styles.itemCategory}>
+                            {currentItem.category}
+                            </Text>
+
+                            <TouchableOpacity onPress={() => setEditingIndex(i)}>
+                            <Text style={{ color: "blue" }}>Edit</Text>
+                            </TouchableOpacity>
+                        </>
+                        )}
                     </View>
 
                     <TouchableOpacity

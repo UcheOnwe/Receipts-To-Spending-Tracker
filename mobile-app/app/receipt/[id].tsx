@@ -24,9 +24,9 @@ export default function ReceiptDetailScreen()
     
     // STATE - Data and loading states
     
-    const [receipt, setReceipt] = useState(null);  // Will hold the full receipt object
+    const [receipt, setReceipt] = useState<any>(null);  // Will hold the full receipt object
     const [loading, setLoading] = useState(true);  // Are we fetching data?
-    const [error, setError] = useState(null);      // Any errors?
+    const [error, setError] = useState<string | null>(null);      // Any errors?
 
     // ============================================
     // LOAD RECEIPT DATA - Runs when screen opens
