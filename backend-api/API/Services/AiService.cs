@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using OpenAI.Audio;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using API.Dtos;
+using API.Models;
+using System.Text.Json;
 
 namespace API.Services;
 
@@ -34,8 +36,24 @@ public class AiService
         );
     }
 
-    public async Task<string> GetAiResponseAsync(string prompt)
+    public async Task<string> GetAiResponseAsync(List<ReceiptResponseDto> receipts)
     {
+         //I want to get a list of all receipts here
+        var receiptJson = JsonSerializer.Serialize(receipts, new JsonSerializerOptions
+        {
+            WriteIndented =true
+        });
+
+        // very specific prompt needed
+         var prompt = $@"
+                Please analyze spending patterns.
+                here are receipts
+                {receiptJson}
+                
+                tell me what category is spent the most on
+                I do not need a breakdown just the category name";
+
+        //send to AI for evaluation       
         var result = await _chat.CompleteChatAsync(
             new[]
             {

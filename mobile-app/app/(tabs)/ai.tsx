@@ -24,6 +24,9 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 import Constants from "expo-constants";
 console.log("api url:", API_URL);
+
+
+//Main////////////////////////////////////////////////////////////////////////
 export default function TabTwoScreen() {
    // call backend test function here 
   const callTest = async () => {
