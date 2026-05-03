@@ -46,12 +46,27 @@ public class AiService
 
         // very specific prompt needed
          var prompt = $@"
-                Please analyze spending patterns.
-                here are receipts
+                Please analyze spending patterns from these receipts:
+                
                 {receiptJson}
                 
-                based off this data what are some recommended changes in spending habits to help save money,
-                 keep the responce as a single paragraph and be consice";
+                Return ONLY a JSON array of short actionable tips.
+
+                Rules:
+                - Each tip must be one short sentence
+                - Max 8 tips
+                - No paragraphs
+                - No explanations
+                - No 'response' field
+                - No extra text
+
+                Example:
+                [
+                ""Reduce fast food spending"",
+                ""Avoid impulse purchases"",
+                ""Shop smarter at Walmart""
+                ]
+                ";
 
         //send to AI for evaluation       
         var result = await _chat.CompleteChatAsync(
