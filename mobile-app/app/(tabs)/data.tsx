@@ -1,11 +1,11 @@
 import { useFocusEffect } from '@react-navigation/native';
-import { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, } from 'react';
 
 import api from '@/Services/api'; // Our API service (Handles backend calls)
 
 
 import { Image } from 'expo-image';
-import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { FlatList, ScrollView, StyleSheet, Text, View, Alert } from 'react-native';
 import { BarChart, PieChart } from "react-native-gifted-charts";
 
 
@@ -30,9 +30,15 @@ const dataL = [{id: '1' , name: 'Walmart', value: 15}, {id: '2' , name: 'Target'
     const Advice = "\tSpend less at walmart and and put this money into savings or somthing idk";
 
 
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export default function ReceiptListScreen()
 {
+
+  //AI advice function
+  const [aiResponse, setAiResponse] = useState("");       //AI response
+  
+  
 
   const piePalette = ['#ffd900', '#ff0000', '#00ff0d', '#0044ff', '#7700ff','#ffae00', '#ff00f2', '#00ccff', '#1b0091', '#39007a'];
 
@@ -58,11 +64,51 @@ export default function ReceiptListScreen()
       setLoading(false);
     }
   }, []);
-
-  useFocusEffect(
-    useCallback(() => {
+/* useFocusEffect(
+    React.useCallback(() => {
       void load();
     }, [load]),
+  ); */
+
+  //call AI with prompt
+    const callAiPrompt = useCallback(async() =>{
+      try{
+        const rec = await Promise.race([
+        api.getReceipts(),
+        new Promise<ReceiptDto[]>((_, reject) => {
+          setTimeout(() => reject(new Error('Request timed out. Please try again.')), 10000);
+        }),
+      ]);
+      setReceipts(rec);
+        console.log(rec);
+        
+        const response = await fetch(`${API_URL}/Ai/advice`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ receipts: rec })
+        });
+  
+        const aiSays = await response.json();
+        //so that aiSays is a string
+        const advice = typeof aiSays === "string"
+        ?aiSays:JSON.stringify(aiSays, null , 2);
+        setAiResponse(advice);
+        return advice;
+      }catch(error){
+        Alert.alert("Error", "could not reach OpenAI");
+        console.error(error);
+      }
+      return null;
+    },
+  []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      void load();
+      void callAiPrompt();
+    }, [load, callAiPrompt]),
   );
 
   const daily = useMemo(() => buildDailySpending(receipts, 7), [receipts]);
@@ -72,18 +118,19 @@ export default function ReceiptListScreen()
         value: day.total,
         label: day.isoDate,
         topLabelComponent: () => (
-        <Text style={{color: '#26a100', fontSize: 18, marginBottom: 6}}>$ {day.total}</Text>
+        <Text style={{color: '#26a100', fontSize: 14, marginBottom: 6}}>$ {day.total}</Text>
       ),
         frontColor: '#35e200',
       })),
     [daily],
   );
 
-  useFocusEffect(
-    useCallback(() => {
+  /* useFocusEffect(
+    React.useCallback(() => {
       void load();
-    }, [load]),
-  );
+      void callAiPrompt();
+    }, [load, callAiPrompt]),
+  ); */
 
   const shares = useMemo(() => buildStoreShares(receipts, 7), [receipts]);
   const pieData = useMemo(
@@ -121,7 +168,7 @@ export default function ReceiptListScreen()
       <View  style={styles.containerH}>
         <Text style={styles.textH}>Spending Advice</Text>
         <View>
-        <Text style={styles.textD}>{Advice}</Text>
+        <Text style={styles.textD}>{"\t\t\t\t\t"}{aiResponse.substring(17).split("\"\n}")[0] || "Loading..."}</Text>
         </View>
       </View>
 
@@ -131,13 +178,14 @@ export default function ReceiptListScreen()
         <Text style={styles.textH}>Spending per day</Text>
        
          <View  style={styles.containerB}><BarChart
-                barWidth={60}
+                barWidth={80}
                 barBorderRadius={4}
                 frontColor="green"
                 data={chartData}
                 yAxisThickness={0}
-                spacing={60}
+                spacing={20}
                 xAxisThickness={0}
+                yAxisExtraHeight={40}
             /></View>
         
         
@@ -173,8 +221,8 @@ export default function ReceiptListScreen()
         />
       </View>
       <View >
-        <Text style={styles.textH}></Text>
-        <Text style={styles.textH}></Text>
+        <Text style={styles.textH}> </Text>
+        <Text style={styles.textH}> </Text>
       </View>
     </View>
         
@@ -334,6 +382,7 @@ textD: {
     color: '#000000',
     fontFamily: 'Inter',
     fontSize: 20,
+    marginInlineStart: 6
     
   },
 textbuffor: {

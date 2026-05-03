@@ -27,7 +27,7 @@ public class AiController : ControllerBase
     {
         _ai = ai;
     }
-    [HttpGet("openai-test")]
+   /*  [HttpGet("openai-test")]
     public async Task<IActionResult> OpenAiTest()
     {
         try
@@ -39,10 +39,10 @@ public class AiController : ControllerBase
         {
             return StatusCode(500, new {error = ex.Message});
         }
-    }
+    } */
 
  //for ai prompt test
-    [HttpPost("chat")]
+   /*  [HttpPost("chat")]
     public async Task<IActionResult> Chat([FromBody] PromptRequest request)
     {
         try
@@ -54,7 +54,7 @@ public class AiController : ControllerBase
         {
             return StatusCode(500, new {error = ex.Message});
         }
-    }
+    } */
 
     public class PromptRequest
     {
@@ -289,4 +289,18 @@ public class AiController : ControllerBase
         return Ok(Rec);
        
     }*/
+     //for ai Advice
+    [HttpPost("advice")]
+    public async Task<IActionResult> Advice([FromBody] AiRequestHelp request)
+    {
+        try
+        {
+            var result = await _ai.GetAiResponseAsync(request.Receipts);
+            return Ok( new{ response = result});
+        }
+        catch(Exception ex)
+        {
+            return StatusCode(500, new {error = ex.Message});
+        }
+    }
 }

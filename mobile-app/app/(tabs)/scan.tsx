@@ -1,7 +1,7 @@
 
 import { Image } from 'expo-image';
 //to navigate to create-receipt.tsx
-import {useRouter} from 'expo-router';
+import {useRouter,useFocusEffect} from 'expo-router';
 
 //from ai.tsx
   //handle receipt backend calls
@@ -10,7 +10,7 @@ import {useRouter} from 'expo-router';
   import { Button, Alert, Pressable, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
   //from camera section
   import {CameraType, CameraView, useCameraPermissions, CameraMode } from 'expo-camera';
-  import {useState, useRef } from 'react';
+  import React,{useCallback, useState, useRef, useEffect } from 'react';
   import AntDesign from "@expo/vector-icons/AntDesign";
   import Feather from "@expo/vector-icons/Feather";
   import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
@@ -39,6 +39,16 @@ export default function Index() {
   const [recording, setRecording] = useState(false);
   const [photos, setPhotos] = useState<string[]>([]);            //used to build list oh photo uri
 
+  //clear out any pictures left in camera memory
+  useFocusEffect(
+    React.useCallback(() => {
+      setUri(null);
+    setPhotos([]);
+    setShowCamera(false);
+
+    return () => {};
+    }, [])
+    );
 
   function CameraViewComponent(){ 
       const router = useRouter();   //to navigate to create-receipt.tsx
@@ -52,14 +62,21 @@ export default function Index() {
             {
               text:"Exit Camera",
               style:"cancel",
-              onPress:() => setShowCamera(false),
+              onPress:() => {
+                setPhotos([]);          //clear photo list
+                setUri(null);
+                setShowCamera(false);   //exit camera
+                
+              },
             },
             {
               text: "Process Receipt",
-              onPress: ()=>router.push({
+              onPress: ()=>{
+                setUri(null);
+                router.push({
                 pathname:"/create-receipt",
               params: {photos: JSON.stringify(photos)}      //will send uri(s) to create-receipt page
-            }),
+            })}
             }
           ]
         );
@@ -244,9 +261,13 @@ if (showCamera) {
       <View  style={styles.containerH}>
         <Text style={styles.textH}>Scan Receipt</Text>
         < TouchableOpacity style={styles.Button}
-            onPress={()=> {console.log("Pressed!");
-                console.log(permission?.granted);
-                      setShowCamera(true)}}>
+            onPress={()=> {
+              console.log("Pressed!");
+              console.log(permission?.granted);
+              setUri(null);
+              setPhotos([]);
+              setShowCamera(true)
+              }}>
           <Text style={styles.ButtonText}>Take a Photo</Text>
           <Image style={styles.buttonLogoCam} source={require('@/assets/images/Camera.png')}/>
          </TouchableOpacity>

@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using OpenAI.Audio;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using API.Dtos;
+using API.Models;
+using System.Text.Json;
 
 namespace API.Services;
 
@@ -34,8 +36,24 @@ public class AiService
         );
     }
 
-    public async Task<string> GetAiResponseAsync(string prompt)
+    public async Task<string> GetAiResponseAsync(List<ReceiptResponseDto> receipts)
     {
+         //I want to get a list of all receipts here
+        var receiptJson = JsonSerializer.Serialize(receipts, new JsonSerializerOptions
+        {
+            WriteIndented =true
+        });
+
+        // very specific prompt needed
+         var prompt = $@"
+                Please analyze spending patterns.
+                here are receipts
+                {receiptJson}
+                
+                based off this data what are some recommended changes in spending habits to help save money,
+                 keep the responce as a single paragraph and be consice";
+
+        //send to AI for evaluation       
         var result = await _chat.CompleteChatAsync(
             new[]
             {
@@ -90,19 +108,37 @@ public class AiService
     public async Task<string> ProductProcessImageBase64Async(string base64Image)
     {
         var prompt = @"
-                    You are extracting structured data from a receipt.
+                You are extracting structured data from a receipt.
 
-                    Output format:
-                    name-quantity-price-
+                Each item must include a category chosen ONLY from this list:
+                [Food & Dining, Groceries, Entertainment, Shopping, Transportation, Drink, Other]
 
-                    Example:
-                    Input:
-                    Milk 2 $3.50
-                    Bread $2.00
+                Output format:
+                name-quantity-price-category-
 
-                    Output:
-                    Milk-2-3.50-
-                    Bread-1-2.00-";
+                Rules:
+                - If quantity is not specified, default to 1
+                - Price should be a number without currency symbols
+                - Include Taxes as if it was a product
+                - Do not include total
+                - Category must exactly match one of the provided options
+                -Do not include subtotals
+                -Do not return any other text
+
+                Example:
+
+                Input:
+                Milk 2 $3.50
+                Bread $2.00
+                Movie Ticket $12.00
+                Tax $1.20
+
+                Output:
+                Milk-2-3.50-Groceries-
+                Bread-1-2.00-Groceries-
+                Movie Ticket-1-12.00-Entertainment-
+                Tax-1-1.20-Other-
+                ";
                     
         var message = ChatMessage.CreateUserMessage(
             new ChatMessageContentPart[]
