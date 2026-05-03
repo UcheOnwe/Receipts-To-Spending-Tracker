@@ -50,8 +50,8 @@ public class AiService
                 here are receipts
                 {receiptJson}
                 
-                tell me what category is spent the most on
-                I do not need a breakdown just the category name";
+                based off this data what are some recommended changes in spending habits to help save money,
+                 keep the responce as a single paragraph and be consice";
 
         //send to AI for evaluation       
         var result = await _chat.CompleteChatAsync(
