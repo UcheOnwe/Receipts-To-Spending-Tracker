@@ -90,19 +90,37 @@ public class AiService
     public async Task<string> ProductProcessImageBase64Async(string base64Image)
     {
         var prompt = @"
-                    You are extracting structured data from a receipt.
+                You are extracting structured data from a receipt.
 
-                    Output format:
-                    name-quantity-price-
+                Each item must include a category chosen ONLY from this list:
+                [Food & Dining, Groceries, Entertainment, Shopping, Transportation, Drink, Other]
 
-                    Example:
-                    Input:
-                    Milk 2 $3.50
-                    Bread $2.00
+                Output format:
+                name-quantity-price-category-
 
-                    Output:
-                    Milk-2-3.50-
-                    Bread-1-2.00-";
+                Rules:
+                - If quantity is not specified, default to 1
+                - Price should be a number without currency symbols
+                - Include Taxes as if it was a product
+                - Do not include total
+                - Category must exactly match one of the provided options
+                -Do not include subtotals
+                -Do not return any other text
+
+                Example:
+
+                Input:
+                Milk 2 $3.50
+                Bread $2.00
+                Movie Ticket $12.00
+                Tax $1.20
+
+                Output:
+                Milk-2-3.50-Groceries-
+                Bread-1-2.00-Groceries-
+                Movie Ticket-1-12.00-Entertainment-
+                Tax-1-1.20-Other-
+                ";
                     
         var message = ChatMessage.CreateUserMessage(
             new ChatMessageContentPart[]
