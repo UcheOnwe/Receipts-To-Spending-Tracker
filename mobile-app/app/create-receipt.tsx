@@ -26,7 +26,7 @@ export default function CreateReceiptScreen(){
     ];
     
     //Editing state
-    const [editingIndex, setEditingIndex] = useState(null);
+    const [editingIndex, setEditingIndex] = useState<number | null>(null);
     //import uri(s) from scan page
     const {photos} = useLocalSearchParams();
     const photoList: string[] = photos ? JSON.parse(photos as string) : [];

@@ -36,7 +36,7 @@ export default function ReceiptListScreen()
 {
 
   //AI advice function
-  const [aiResponse, setAiResponse] = useState("");       //AI response
+  const [aiResponse, setAiResponse] = useState<string[]>([]);       //AI response
   
   
 
@@ -90,12 +90,34 @@ export default function ReceiptListScreen()
           body: JSON.stringify({ receipts: rec })
         });
   
-        const aiSays = await response.json();
+        /*const aiSays = await response.json();
         //so that aiSays is a string
         const advice = typeof aiSays === "string"
         ?aiSays:JSON.stringify(aiSays, null , 2);
         setAiResponse(advice);
-        return advice;
+        return advice;*/
+        //const aiSays = await response.json();
+
+        const raw = await response.json();
+        const aiSays = raw.response ?? raw;
+
+        // Normalize response into an array
+        let tips: string[] = [];
+
+        if (Array.isArray(aiSays)) {
+          tips = aiSays;
+        } 
+        else {
+          try {
+            tips = JSON.parse(aiSays);
+          } 
+          catch {
+            tips = [aiSays]; // fallback so app doesn't crash
+          }
+        }
+
+        setAiResponse(tips);
+        return tips;
       }catch(error){
         Alert.alert("Error", "could not reach OpenAI");
         console.error(error);
@@ -168,7 +190,15 @@ export default function ReceiptListScreen()
       <View  style={styles.containerH}>
         <Text style={styles.textH}>Spending Advice</Text>
         <View>
-        <Text style={styles.textD}>{"\t\t\t\t\t"}{aiResponse.substring(17).split("\"\n}")[0] || "Loading..."}</Text>
+        {aiResponse.length === 0 ? (
+          <Text style={styles.textD}>Loading...</Text>
+        ) : (
+          aiResponse.map((tip, index) => (
+            <Text key={index} style={[styles.textD, { marginBottom: 8}]}>
+              • {tip}
+            </Text>
+          ))
+        )}
         </View>
       </View>
 
@@ -250,6 +280,12 @@ export default function ReceiptListScreen()
 }
 
 const styles = StyleSheet.create({
+
+  tip: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: '#333'
+  },
   
   containerT: {
     backgroundColor: '#fdfdfd',

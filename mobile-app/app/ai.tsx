@@ -11,7 +11,7 @@ import { Fonts } from '@/constants/theme';
 //to put a button in react antive
 import { Button, View, Alert, Text, Pressable } from 'react-native';
 //handle receipt backend calls
-import api from '../../Services/api'; // Our API service (Handles backend calls)
+import api from '../Services/api'; // Our API service (Handles backend calls)
 //import for camera
 import {CameraType, CameraView, useCameraPermissions, CameraMode } from 'expo-camera';
 import {useState, useRef } from 'react';
