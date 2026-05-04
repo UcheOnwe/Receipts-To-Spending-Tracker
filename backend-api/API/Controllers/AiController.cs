@@ -170,8 +170,7 @@ public class AiController : ControllerBase
 
     //trying endpoint with base64
     [HttpPost("imageName")]
-    [Consumes("multipart/form-data")]       //gets rid of FromForm
-    public async Task<IActionResult> ProcessImageName( IFormFile file)
+    public async Task<IActionResult> ProcessImageName([FromForm] IFormFile file)
     {
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded");

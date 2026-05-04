@@ -313,19 +313,16 @@ const styles = StyleSheet.create({
   },
   textT: {
     color: '#000000',
-    fontFamily: 'Kameron',
+    fontFamily: 'Cochin',
     fontSize: 40,
     top: 5,
     bottom: 5,
-    flexShrink: 1,
-    marginRight: 60,
   },
   textH: {
     color: '#003879',
-    fontFamily: 'Inter',
+    fontFamily: 'Cochin',
     fontSize: 30,
     top: 0,
-     flexShrink: 1,
   },
   tinyLogo: {
     position: 'absolute',

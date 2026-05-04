@@ -286,7 +286,9 @@ const styles = StyleSheet.create({
     position: 'relative',
      flexGrow: 1, paddingBottom:100,
     margin: 0,
+
     padding: 0
+
   },
   containerH: {
     backgroundColor: '#fdfdfd',
@@ -318,8 +320,8 @@ const styles = StyleSheet.create({
     color: '#003879',
     fontFamily: 'Inter',
     fontSize: 30,
-    top: 0,
      flexShrink: 1,
+    top: 0,
   },
   tinyLogo: {
     position: 'absolute',
@@ -367,10 +369,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
      position: 'absolute',
     verticalAlign: 'middle',
-    flexShrink: 1,
-    bottom: 15,
-    width: 200,
-  height: 220,
+    flexShrink: 3,
+    flex: 1,
+marginTop: 60,
   },
   buttonLogoCam: {
     position: 'absolute',
