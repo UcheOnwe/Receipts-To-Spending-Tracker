@@ -46,3 +46,4 @@ Need to make process receipt button send resent receipt created to create receip
     In create-receipt page 
         import photo uri array
 
+test push
