@@ -25,7 +25,7 @@ export default function CreateReceiptScreen(){
         "Other"
     ];
     
-    //Editing state
+    //Track which item is being  edited (null) = not editing
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     //import uri(s) from scan page
     const {photos} = useLocalSearchParams();
@@ -80,41 +80,41 @@ export default function CreateReceiptScreen(){
 
 
     //UPLOAD URI(S) TO BACKEND TO PROCESS
-        const uploadToBackend = async (uris: string[]) => {
-          console.log("Uploading image to backend...", uris);
-        
-          const formData = new FormData();
-        
-          uris.forEach((uri, index)=>{
-            formData.append("file", {
-                uri,
-                type:"image/jpeg",
-                name: `photo_${index}.jpeg`,
-            } as any);
-          });
-        
-          const response = await fetch(`${API_URL}/ai/imageName`, {
-            method: "POST",
-            body: formData,
-          });
-        
-          console.log("Response status:", response.status);
-        
-          if (!response.ok) {
-            throw new Error("Upload failed");
-          }
-        
-          const receipt = await response.json();
-        
-          console.log("Backend returned:", receipt);
-        
-          /* // OPTIONAL: save to DB
-          const save = await api.createReceipt(receipt);
-          console.log("receipt saved:", save); */
-        
-          return receipt; 
-         //return save;
-        };
+    const uploadToBackend = async (uris: string[]) => {
+        console.log("Uploading image to backend...", uris);
+    
+        const formData = new FormData();
+    
+        uris.forEach((uri, index)=>{
+        formData.append("file", {
+            uri,
+            type:"image/jpeg",
+            name: `photo_${index}.jpeg`,
+        } as any);
+        });
+    
+        const response = await fetch(`${API_URL}/ai/imageName`, {
+        method: "POST",
+        body: formData,
+        });
+    
+        console.log("Response status:", response.status);
+    
+        if (!response.ok) {
+        throw new Error("Upload failed");
+        }
+    
+        const receipt = await response.json();
+    
+        console.log("Backend returned:", receipt);
+    
+        /* // OPTIONAL: save to DB
+        const save = await api.createReceipt(receipt);
+        console.log("receipt saved:", save); */
+    
+        return receipt; 
+        //return save;
+    };
 
 
     //Function: Add item to the items list
@@ -155,7 +155,7 @@ export default function CreateReceiptScreen(){
         //Step 4: Add to items array
         //Note: In React, we must create a New array, not modify existing
         //c# POV This is like: List<Item> newList = new List<Item>(oldList); newList.Add(newItem);
-        const newItemsList: Item[] = [];
+        /*const newItemsList: Item[] = [];
 
         // Copy all existing items to new array
         for (let i = 0; i < items.length; i++){
@@ -168,7 +168,22 @@ export default function CreateReceiptScreen(){
         
 
         // Update state with the new array
-        setItems(newItemsList);
+        setItems(newItemsList);*/
+        
+        //if editing to replace existing item
+        if (editingIndex !== null){
+            const updatedItems = [...items]; //copy array
+
+            updatedItems[editingIndex] = newItem; // replace item
+
+            setItems(updatedItems);
+
+            setEditingIndex(null); // exit edit mode
+        }
+        else {
+            //Normal add
+            setItems([...items, newItem]);
+        }
 
         //STEP 5: Clear the input fields so user can add another item
         setItemName('');
@@ -271,7 +286,23 @@ export default function CreateReceiptScreen(){
         }
     }
 
-    //Update Item
+    //When user clicks "Edit"
+    //This loads the selected item into the input fieldsat the 
+    function handleEditItem(index: number){
+        const item = items[index];
+
+        // Fill input fields with  existing values
+        setItemName(item.itemName);
+        setItemPrice(item.price.toString());
+        setItemQuantity(item.quantity.toString());
+        setItemCategory(item.category);
+
+        // Remember which item we are editing 
+        setEditingIndex(index);
+        
+    }
+
+    /*Update Item
     function updateItem(index: number, field: keyof Item, value: string){
         const updatedItems = [...items]; // copy list
         // convert numbers properly
@@ -286,7 +317,7 @@ export default function CreateReceiptScreen(){
         }
 
         setItems(updatedItems);
-    }
+    }*/
 
 
     //Function: Render list of added items
@@ -309,86 +340,33 @@ export default function CreateReceiptScreen(){
 
             // Create JSX FOR THIS Item
             const itemElement = (
-                <View key = {i} style = {styles.itemCard}>
-                    <View style = {styles.itemInfo}>
-                        {editingIndex === i ? (
-                        <>
-                            <TextInput
-                            style={styles.input}
-                            value={currentItem.itemName}
-                            onChangeText={(text) => updateItem(i, "itemName", text)}
-                            keyboardType="default" 
-                            placeholder="Item name"
-                            placeholderTextColor="#332727"
-                            />
+                <View key={i} style = {styles.itemCard}>
+                    <View style={styles.itemInfo}>
 
-                            <TextInput
-                            style={styles.input}
-                            value={currentItem.price.toString()}
-                            onChangeText={(text) => updateItem(i, "price", text)}
-                            keyboardType="decimal-pad"
-                            placeholder="Price (e.g. 3.99)"
-                            placeholderTextColor="#332727"
-                            />
+                        <Text style={styles.itemName}>
+                            {currentItem.itemName}
+                        </Text>
 
-                            <TextInput
-                            style={styles.input}
-                            value={currentItem.quantity.toString()}
-                            onChangeText={(text) => updateItem(i, "quantity", text)}
-                            keyboardType="number-pad"
-                            placeholder="Quantity"
-                            placeholderTextColor="#332727"
-                            />
-
-                            <View style={styles.pickerContainer}>
-                                <Picker
-                                    selectedValue={
-                                        CATEGORY_OPTIONS.includes(currentItem.category)
-                                        ?currentItem.category
-                                        :"Other"
-                                    }
-                                    onValueChange={(value) => updateItem(i, "category", value)}
-                                >
-                                    <Picker.Item label="Food & Dining" value="Food & Dining" />
-                                    <Picker.Item label="Groceries" value="Groceries" />
-                                    <Picker.Item label="Entertainment" value="Entertainment" />
-                                    <Picker.Item label="Shopping" value="Shopping" />
-                                    <Picker.Item label="Transportation" value="Transportation" />
-                                    <Picker.Item label="Drink" value="Drink" />
-                                    <Picker.Item label="Other" value="Other" />
-                                </Picker>
-                            </View>
-
-                            <TouchableOpacity onPress={() => setEditingIndex(null)}>
-                            <Text style={{ color: "green" }}>Save</Text>
-                            </TouchableOpacity>
-                            </>
-                            ) : (
-                            <>
-                            <Text style={styles.itemName}>{currentItem.itemName}</Text>
-
-                            <Text style={styles.itemDetails}>
+                        <Text style={styles.itemDetails}>
                             ${priceFormatted} * {currentItem.quantity} = ${itemTotalFormatted}
-                            </Text>
+                        </Text>
 
-                            <Text style={styles.itemCategory}>
+                        <Text style={styles.itemCategory}>
                             {currentItem.category}
-                            </Text>
+                        </Text>
+                    <View style={{ flexDirection: "column", marginTop: 8}}>  
+                        {/*EDIT BUTTON*/}
+                        <TouchableOpacity onPress={() => handleEditItem(i)} style={{ marginRight: 15}}>
+                            <Text style={{color: "blue", fontWeight: "bold"}}>Edit</Text>
+                        </TouchableOpacity>
 
-                            <TouchableOpacity onPress={() => setEditingIndex(i)}>
-                            <Text style={{ color: "blue" }}>Edit</Text>
-                            </TouchableOpacity>
-                        </>
-                        )}
+                        {/*Remove BUTTON*/}
+                        <TouchableOpacity onPress={() => handleRemoveItem(i)}>
+                            <Text style={{ color: "red", fontWeight: "bold"}}>Remove</Text>
+                        </TouchableOpacity>
+                    </View>
                     </View>
 
-                    <TouchableOpacity
-                        onPress={function() { handleRemoveItem(i); }}
-                    >
-                        <Text style={styles.removeButtonText}>Remove</Text>
-                        
-
-                    </TouchableOpacity>
                 </View>
             );
 
