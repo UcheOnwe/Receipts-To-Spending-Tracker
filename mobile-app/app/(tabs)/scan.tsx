@@ -286,7 +286,9 @@ const styles = StyleSheet.create({
     position: 'relative',
      flexGrow: 1, paddingBottom:100,
     margin: 0,
+    flexShrink: 1,
     padding: 0,
+    marginRight: 60,
   },
   containerH: {
     backgroundColor: '#fdfdfd',
@@ -311,6 +313,7 @@ const styles = StyleSheet.create({
     fontSize: 40,
     top: 5,
     bottom: 5,
+    flexShrink: 1,
   },
   textH: {
     color: '#003879',
@@ -364,6 +367,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
      position: 'absolute',
     verticalAlign: 'middle',
+    flexShrink: 1,
     bottom: 15,
     width: 200,
   height: 220,
