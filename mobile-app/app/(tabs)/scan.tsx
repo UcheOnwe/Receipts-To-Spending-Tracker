@@ -286,8 +286,9 @@ const styles = StyleSheet.create({
     position: 'relative',
      flexGrow: 1, paddingBottom:100,
     margin: 0,
-    padding: 0,
-    
+
+    padding: 0
+
   },
   containerH: {
     backgroundColor: '#fdfdfd',
@@ -368,10 +369,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
      position: 'absolute',
     verticalAlign: 'middle',
-    flexShrink: 1,
-    bottom: 15,
-    width: 200,
-  height: 220,
+    flexShrink: 3,
+    flex: 1,
+marginTop: 60,
   },
   buttonLogoCam: {
     position: 'absolute',
@@ -379,6 +379,7 @@ const styles = StyleSheet.create({
     height: 38,
     bottom: 40,
     alignSelf: 'center',
+     flexShrink: 1,
   },
   buttonLogoImg: {
     position: 'absolute',
